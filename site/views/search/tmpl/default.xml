@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<metadata>
+	<layout title="Search">
+		<message>
+			<![CDATA[This layout will display the search page.]]>
+		</message>
+	</layout>
+    <state>
+        <name>MiwoShop: Search</name>
+        <description>This layout will display the search page.</description>
+		<url>
+			<param type="text" name="filter_name" default="" size="30" label="Query" description="Search query (optional)." />
+		</url>
+		<params addpath="/miwoshop/site/miwoshop/elements">
+			<param name="miwoshop_store_id" type="miwoshopstore" default="" label="Select Store" description="Select the proper store for this page." />
+		</params>
+    </state>
+	<fields name="request">
+		<fieldset name="request" label="MiwoShop: Search" >
+            <field type="text" name="filter_name" default="" size="30" label="Query" description="Search query (optional)." />
+		</fieldset>
+    </fields>
+	<fields name="params">
+		<fieldset name="basic" label="MiwoShop: Store" addfieldpath="/miwoshop/site/miwoshop/elements">
+            <field name="miwoshop_store_id" type="miwoshopstore" default="" label="Select Store" description="Select the proper store for this page." />
+        </fieldset>
+    </fields>
+</metadata>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<access component="com_miwoshop">
+	<section name="component">
+		<action name="core.admin" title="MACTION_ADMIN" description="MACTION_ADMIN_COMPONENT_DESC" />
+		<action name="core.manage" title="MACTION_MANAGE" description="MACTION_MANAGE_COMPONENT_DESC" />
+	</section>
+</access>

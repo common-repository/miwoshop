@@ -1,0 +1,1308 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modification>
+    <name>MiwoShop "Save", "Save and New", "Save and Close", "Enable", "Disable" buttons and "Status" column</name>
+    <code>miwoshop_buttons</code>
+    <version>1.0.0</version>
+    <link>http://www.miwisoft.com</link>
+    <author>Miwisoft LLC</author>
+
+    <file path="admin/controller/catalog/product.php">
+        <operation error="skip">
+            <search><![CDATA[$data['button_filter'] = $this->language->get('button_filter');]]></search>
+            <add position="after"><![CDATA[
+        #miwoshop-start
+        $data['button_enable'] = $this->language->get('button_enable');
+        $data['button_disable'] = $this->language->get('button_disable');
+        #miwoshop-end
+            ]]></add>
+        </operation>
+
+        <operation error="skip">
+            <search><![CDATA[$data['button_remove'] = $this->language->get('button_remove');]]></search>
+            <add position="after"><![CDATA[
+        #miwoshop-start
+        $data['button_savenew'] = $this->language->get('button_savenew');
+        $data['button_saveclose'] = $this->language->get('button_saveclose');
+        #miwoshop-end
+            ]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[$this->model_catalog_product->addProduct($this->request->post);]]></search>
+            <add position="replace"><![CDATA[$product_id = $this->model_catalog_product->addProduct($this->request->post); #miwoshop-start]]></add>
+        </operation>
+        <operation error="skip">
+            <search index="0"><![CDATA[$this->response->redirect($this->url->link('catalog/product', 'token=' . $this->session->data['token'] . $url, 'SSL'));]]></search>
+            <add position="before"><![CDATA[
+            #miwoshop-start
+            if (isset($this->request->post['button']) and $this->request->post['button'] == 'save') {
+                 $this->response->redirect($this->url->link('catalog/product/edit', 'product_id='.$this->request->get['product_id'].'&token=' . $this->session->data['token'] . $url, 'SSL'));
+            }
+
+            if (isset($this->request->post['button']) and $this->request->post['button'] == 'new') {
+                 $this->response->redirect($this->url->link('catalog/product/add', 'token=' . $this->session->data['token'] . $url, 'SSL'));
+            }
+            #miwoshop-end
+            ]]></add>
+        </operation>
+        <operation error="skip">
+            <search index="1"><![CDATA[$this->response->redirect($this->url->link('catalog/product', 'token=' . $this->session->data['token'] . $url, 'SSL'));]]></search>
+            <add position="before"><![CDATA[
+            #miwoshop-start
+            if (isset($this->request->post['button']) and $this->request->post['button'] == 'save') {
+                 $this->response->redirect($this->url->link('catalog/product/edit', 'product_id='.$this->request->get['product_id'].'&token=' . $this->session->data['token'] . $url, 'SSL'));
+            }
+
+            if (isset($this->request->post['button']) and $this->request->post['button'] == 'new') {
+                 $this->response->redirect($this->url->link('catalog/product/add', 'token=' . $this->session->data['token'] . $url, 'SSL'));
+            }
+            #miwoshop-end
+            ]]></add>
+        </operation>
+    </file>
+
+    <file path="admin/controller/catalog/category.php">
+        <operation error="skip">
+            <search><![CDATA[$data['button_rebuild'] = $this->language->get('button_rebuild');]]></search>
+            <add position="after"><![CDATA[
+        #miwoshop-start
+        $data['button_enable'] = $this->language->get('button_enable');
+        $data['button_disable'] = $this->language->get('button_disable');
+        $data['button_filter'] = $this->language->get('button_filter');
+        #miwoshop-end
+            ]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[$data['column_action'] = $this->language->get('column_action');]]></search>
+            <add position="after"><![CDATA[
+        $data['column_status'] = $this->language->get('column_status'); #miwoshop-start
+            ]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA['sort_order'  => $result['sort_order'],]]></search>
+            <add position="after"><![CDATA[              'status'      => ($result['status'] ? $this->language->get('text_enabled') : $this->language->get('text_disabled')), #miwoshop-start]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[$data['text_no_results'] = $this->language->get('text_no_results');]]></search>
+            <add position="after"><![CDATA[
+        #miwoshop-start
+        $data['text_enabled'] = $this->language->get('text_enabled');
+        $data['text_disabled'] = $this->language->get('text_disabled');
+        #miwoshop-end
+            ]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[$data['button_cancel'] = $this->language->get('button_cancel');]]></search>
+            <add position="after"><![CDATA[
+        #miwoshop-start
+        $data['button_savenew'] = $this->language->get('button_savenew');
+        $data['button_saveclose'] = $this->language->get('button_saveclose');
+        #miwoshop-end
+            ]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[$this->model_catalog_category->addCategory($this->request->post);]]></search>
+            <add position="replace"><![CDATA[$category_id = $this->model_catalog_category->addCategory($this->request->post); #miwoshop-start]]></add>
+        </operation>
+        <operation error="skip">
+            <search index="0"><![CDATA[$this->response->redirect($this->url->link('catalog/category', 'token=' . $this->session->data['token'] . $url, 'SSL'));]]></search>
+            <add position="before"><![CDATA[
+            #miwoshop-start
+            if (isset($this->request->post['button']) and $this->request->post['button'] == 'save') {
+                 $this->response->redirect($this->url->link('catalog/category/edit', 'category_id='.$category_id.'&token=' . $this->session->data['token'] . $url, 'SSL'));
+            }
+
+            if (isset($this->request->post['button']) and $this->request->post['button'] == 'new') {
+                 $this->response->redirect($this->url->link('catalog/category/add', 'token=' . $this->session->data['token'] . $url, 'SSL'));
+            }
+            #miwoshop-end
+            ]]></add>
+        </operation>
+        <operation error="skip">
+            <search index="1"><![CDATA[$this->response->redirect($this->url->link('catalog/category', 'token=' . $this->session->data['token'] . $url, 'SSL'));]]></search>
+            <add position="before"><![CDATA[
+            #miwoshop-start
+            if (isset($this->request->post['button']) and $this->request->post['button'] == 'save') {
+                 $this->response->redirect($this->url->link('catalog/category/edit', 'category_id='.$this->request->get['category_id'].'&token=' . $this->session->data['token'] . $url, 'SSL'));
+            }
+
+            if (isset($this->request->post['button']) and $this->request->post['button'] == 'new') {
+                 $this->response->redirect($this->url->link('catalog/category/add', 'token=' . $this->session->data['token'] . $url, 'SSL'));
+            }
+            #miwoshop-end
+            ]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[$data['sort_name'] = $this->url->link('catalog/category', 'token=' . $this->session->data['token'] . '&sort=name' . $url, 'SSL');]]></search>
+            <add position="after"><![CDATA[
+        $data['sort_status'] = $this->url->link('catalog/category', 'token=' . $this->session->data['token'] . '&sort=status' . $url, 'SSL'); #miwoshop-start
+            ]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[$data['pagination'] = $pagination->render();]]></search>
+            <add position="after"><![CDATA[
+            $data['token'] = $this->session->data['token']; #miwoshop-start
+            ]]></add>
+        </operation>
+    </file>
+
+    <file path="admin/controller/catalog/manufacturer.php">
+        <operation error="skip">
+            <search><![CDATA[$data['button_cancel'] = $this->language->get('button_cancel');]]></search>
+            <add position="after"><![CDATA[
+        #miwoshop-start
+        $data['button_savenew'] = $this->language->get('button_savenew');
+        $data['button_saveclose'] = $this->language->get('button_saveclose');
+        #miwoshop-end
+            ]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[$this->model_catalog_manufacturer->addManufacturer($this->request->post);]]></search>
+            <add position="replace"><![CDATA[$manufacturer_id = $this->model_catalog_manufacturer->addManufacturer($this->request->post); #miwoshop-start]]></add>
+        </operation>
+        <operation error="skip">
+            <search index="0"><![CDATA[$this->response->redirect($this->url->link('catalog/manufacturer', 'token=' . $this->session->data['token'] . $url, 'SSL'));]]></search>
+            <add position="before"><![CDATA[
+            #miwoshop-start
+            if (isset($this->request->post['button']) and $this->request->post['button'] == 'save') {
+                 $this->response->redirect($this->url->link('catalog/manufacturer/edit', 'manufacturer_id='.$manufacturer_id.'&token=' . $this->session->data['token'] . $url, 'SSL'));
+            }
+
+            if (isset($this->request->post['button']) and $this->request->post['button'] == 'new') {
+                 $this->response->redirect($this->url->link('catalog/manufacturer/add', 'token=' . $this->session->data['token'] . $url, 'SSL'));
+            }
+            #miwoshop-end
+            ]]></add>
+        </operation>
+        <operation error="skip">
+            <search index="1"><![CDATA[$this->response->redirect($this->url->link('catalog/manufacturer', 'token=' . $this->session->data['token'] . $url, 'SSL'));]]></search>
+            <add position="before"><![CDATA[
+            #miwoshop-start
+            if (isset($this->request->post['button']) and $this->request->post['button'] == 'save') {
+                 $this->response->redirect($this->url->link('catalog/manufacturer/edit', 'manufacturer_id='.$this->request->get['manufacturer_id'].'&token=' . $this->session->data['token'] . $url, 'SSL'));
+            }
+
+            if (isset($this->request->post['button']) and $this->request->post['button'] == 'new') {
+                 $this->response->redirect($this->url->link('catalog/manufacturer/add', 'token=' . $this->session->data['token'] . $url, 'SSL'));
+            }
+            #miwoshop-end
+            ]]></add>
+        </operation>
+    </file>
+
+    <file path="admin/controller/catalog/review.php">
+        <operation error="skip">
+            <search><![CDATA[$data['button_delete'] = $this->language->get('button_delete');]]></search>
+            <add position="after"><![CDATA[
+        #miwoshop-start
+        $data['button_enable'] = $this->language->get('button_enable');
+        $data['button_disable'] = $this->language->get('button_disable');
+        #miwoshop-end
+            ]]></add>
+        </operation>
+
+        <operation error="skip">
+            <search><![CDATA[$data['button_cancel'] = $this->language->get('button_cancel');]]></search>
+            <add position="after"><![CDATA[
+        #miwoshop-start
+        $data['button_savenew'] = $this->language->get('button_savenew');
+        $data['button_saveclose'] = $this->language->get('button_saveclose');
+        #miwoshop-end
+            ]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[$this->model_catalog_review->addReview($this->request->post);]]></search>
+            <add position="replace"><![CDATA[$review_id = $this->model_catalog_review->addReview($this->request->post); #miwoshop-start]]></add>
+        </operation>
+        <operation error="skip">
+            <search index="0"><![CDATA[$this->response->redirect($this->url->link('catalog/review', 'token=' . $this->session->data['token'] . $url, 'SSL'));]]></search>
+            <add position="before"><![CDATA[
+            #miwoshop-start
+            if (isset($this->request->post['button']) and $this->request->post['button'] == 'save') {
+                 $this->response->redirect($this->url->link('catalog/review/edit', 'review_id='.$review_id.'&token=' . $this->session->data['token'] . $url, 'SSL'));
+            }
+
+            if (isset($this->request->post['button']) and $this->request->post['button'] == 'new') {
+                 $this->response->redirect($this->url->link('catalog/review/add', 'token=' . $this->session->data['token'] . $url, 'SSL'));
+            }
+            #miwoshop-end
+            ]]></add>
+        </operation>
+        <operation error="skip">
+            <search index="1"><![CDATA[$this->response->redirect($this->url->link('catalog/review', 'token=' . $this->session->data['token'] . $url, 'SSL'));]]></search>
+            <add position="before"><![CDATA[
+            #miwoshop-start
+            if (isset($this->request->post['button']) and $this->request->post['button'] == 'save') {
+                 $this->response->redirect($this->url->link('catalog/review/edit', 'review_id='.$this->request->get['review_id'].'&token=' . $this->session->data['token'] . $url, 'SSL'));
+            }
+
+            if (isset($this->request->post['button']) and $this->request->post['button'] == 'new') {
+                 $this->response->redirect($this->url->link('catalog/review/add', 'token=' . $this->session->data['token'] . $url, 'SSL'));
+            }
+            #miwoshop-end
+            ]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[$data['pagination'] = $pagination->render();]]></search>
+            <add position="after"><![CDATA[
+        $data['token'] = $this->session->data['token']; #miwoshop-start
+            ]]></add>
+        </operation>
+    </file>
+
+    <file path="admin/controller/catalog/information.php">
+        <operation error="skip">
+            <search><![CDATA[$data['button_delete'] = $this->language->get('button_delete');]]></search>
+            <add position="after"><![CDATA[
+        #miwoshop-start
+        $data['button_enable'] = $this->language->get('button_enable');
+        $data['button_disable'] = $this->language->get('button_disable');
+        #miwoshop-end
+            ]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[$data['column_action'] = $this->language->get('column_action');]]></search>
+            <add position="after"><![CDATA[
+            $data['column_status'] = $this->language->get('column_status'); #miwoshop-start
+            ]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA['sort_order'     => $result['sort_order'],]]></search>
+            <add position="after"><![CDATA[
+            'status'      => ($result['status'] ? $this->language->get('text_enabled') : $this->language->get('text_disabled')), #miwoshop-start
+            ]]></add>
+        </operation>
+
+        <operation error="skip">
+            <search><![CDATA[$data['button_cancel'] = $this->language->get('button_cancel');]]></search>
+            <add position="after"><![CDATA[
+        #miwoshop-start
+        $data['button_savenew'] = $this->language->get('button_savenew');
+        $data['button_saveclose'] = $this->language->get('button_saveclose');
+        #miwoshop-end
+            ]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[$this->model_catalog_information->addInformation($this->request->post);]]></search>
+            <add position="replace"><![CDATA[$information_id = $this->model_catalog_information->addInformation($this->request->post); #miwoshop-start]]></add>
+        </operation>
+        <operation error="skip">
+            <search index="0"><![CDATA[$this->response->redirect($this->url->link('catalog/information', 'token=' . $this->session->data['token'] . $url, 'SSL'));]]></search>
+            <add position="before"><![CDATA[
+            #miwoshop-start
+            if (isset($this->request->post['button']) and $this->request->post['button'] == 'save') {
+                 $this->response->redirect($this->url->link('catalog/information/edit', 'information_id='.$information_id.'&token=' . $this->session->data['token'] . $url, 'SSL'));
+            }
+
+            if (isset($this->request->post['button']) and $this->request->post['button'] == 'new') {
+                 $this->response->redirect($this->url->link('catalog/information/add', 'token=' . $this->session->data['token'] . $url, 'SSL'));
+            }
+            #miwoshop-end
+            ]]></add>
+        </operation>
+        <operation error="skip">
+            <search index="1"><![CDATA[$this->response->redirect($this->url->link('catalog/information', 'token=' . $this->session->data['token'] . $url, 'SSL'));]]></search>
+            <add position="before"><![CDATA[
+            #miwoshop-start
+            if (isset($this->request->post['button']) and $this->request->post['button'] == 'save') {
+                 $this->response->redirect($this->url->link('catalog/information/edit', 'information_id='.$this->request->get['information_id'].'&token=' . $this->session->data['token'] . $url, 'SSL'));
+            }
+
+            if (isset($this->request->post['button']) and $this->request->post['button'] == 'new') {
+                 $this->response->redirect($this->url->link('catalog/information/add', 'token=' . $this->session->data['token'] . $url, 'SSL'));
+            }
+            #miwoshop-end
+            ]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[$data['pagination'] = $pagination->render();]]></search>
+            <add position="after"><![CDATA[
+        $data['token'] = $this->session->data['token']; #miwoshop-start
+            ]]></add>
+        </operation>
+    </file>
+
+    <file path="admin/controller/catalog/filter.php">
+        <operation error="skip">
+            <search><![CDATA[$data['button_remove'] = $this->language->get('button_remove');]]></search>
+            <add position="after"><![CDATA[
+        #miwoshop-start
+        $data['button_savenew'] = $this->language->get('button_savenew');
+        $data['button_saveclose'] = $this->language->get('button_saveclose');
+        #miwoshop-end
+            ]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[$this->model_catalog_filter->addFilter($this->request->post);]]></search>
+            <add position="replace"><![CDATA[$filter_group_id = $this->model_catalog_filter->addFilter($this->request->post); #miwoshop-start]]></add>
+        </operation>
+        <operation error="skip">
+            <search index="0"><![CDATA[$this->response->redirect($this->url->link('catalog/filter', 'token=' . $this->session->data['token'] . $url, 'SSL'));]]></search>
+            <add position="before"><![CDATA[
+            #miwoshop-start
+            if (isset($this->request->post['button']) and $this->request->post['button'] == 'save') {
+                 $this->response->redirect($this->url->link('catalog/filter/edit', 'filter_group_id='.$filter_group_id.'&token=' . $this->session->data['token'] . $url, 'SSL'));
+            }
+
+            if (isset($this->request->post['button']) and $this->request->post['button'] == 'new') {
+                 $this->response->redirect($this->url->link('catalog/filter/add', 'token=' . $this->session->data['token'] . $url, 'SSL'));
+            }
+            #miwoshop-end
+            ]]></add>
+        </operation>
+        <operation error="skip">
+            <search index="1"><![CDATA[$this->response->redirect($this->url->link('catalog/filter', 'token=' . $this->session->data['token'] . $url, 'SSL'));]]></search>
+            <add position="before"><![CDATA[
+            #miwoshop-start
+            if (isset($this->request->post['button']) and $this->request->post['button'] == 'save') {
+                 $this->response->redirect($this->url->link('catalog/filter/edit', 'filter_group_id='.$this->request->get['filter_group_id'].'&token=' . $this->session->data['token'] . $url, 'SSL'));
+            }
+
+            if (isset($this->request->post['button']) and $this->request->post['button'] == 'new') {
+                 $this->response->redirect($this->url->link('catalog/filter/add', 'token=' . $this->session->data['token'] . $url, 'SSL'));
+            }
+            #miwoshop-end
+            ]]></add>
+        </operation>
+    </file>
+
+    <file path="admin/controller/catalog/attribute.php">
+        <operation error="skip">
+            <search><![CDATA[$data['button_cancel'] = $this->language->get('button_cancel');]]></search>
+            <add position="after"><![CDATA[
+        #miwoshop-start
+        $data['button_savenew'] = $this->language->get('button_savenew');
+        $data['button_saveclose'] = $this->language->get('button_saveclose');
+        #miwoshop-end
+            ]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[$this->model_catalog_attribute->addAttribute($this->request->post);]]></search>
+            <add position="replace"><![CDATA[$attribute_id = $this->model_catalog_attribute->addAttribute($this->request->post); #miwoshop-start]]></add>
+        </operation>
+        <operation error="skip">
+            <search index="0"><![CDATA[$this->response->redirect($this->url->link('catalog/attribute', 'token=' . $this->session->data['token'] . $url, 'SSL'));]]></search>
+            <add position="before"><![CDATA[
+            #miwoshop-start
+            if (isset($this->request->post['button']) and $this->request->post['button'] == 'save') {
+                 $this->response->redirect($this->url->link('catalog/attribute/edit', 'attribute_id='.$attribute_id.'&token=' . $this->session->data['token'] . $url, 'SSL'));
+            }
+
+            if (isset($this->request->post['button']) and $this->request->post['button'] == 'new') {
+                 $this->response->redirect($this->url->link('catalog/attribute/add', 'token=' . $this->session->data['token'] . $url, 'SSL'));
+            }
+            #miwoshop-end
+            ]]></add>
+        </operation>
+        <operation error="skip">
+            <search index="1"><![CDATA[$this->response->redirect($this->url->link('catalog/attribute', 'token=' . $this->session->data['token'] . $url, 'SSL'));]]></search>
+            <add position="before"><![CDATA[
+            #miwoshop-start
+            if (isset($this->request->post['button']) and $this->request->post['button'] == 'save') {
+                 $this->response->redirect($this->url->link('catalog/attribute/edit', 'attribute_id='.$this->request->get['attribute_id'].'&token=' . $this->session->data['token'] . $url, 'SSL'));
+            }
+
+            if (isset($this->request->post['button']) and $this->request->post['button'] == 'new') {
+                 $this->response->redirect($this->url->link('catalog/attribute/add', 'token=' . $this->session->data['token'] . $url, 'SSL'));
+            }
+            #miwoshop-end
+            ]]></add>
+        </operation>
+    </file>
+
+    <file path="admin/controller/catalog/attribute_group.php">
+        <operation error="skip">
+            <search><![CDATA[$data['button_cancel'] = $this->language->get('button_cancel');]]></search>
+            <add position="after"><![CDATA[
+        #miwoshop-start
+        $data['button_savenew'] = $this->language->get('button_savenew');
+        $data['button_saveclose'] = $this->language->get('button_saveclose');
+        #miwoshop-end
+            ]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[$this->model_catalog_attribute_group->addAttributeGroup($this->request->post);]]></search>
+            <add position="replace"><![CDATA[$attribute_group_id = $this->model_catalog_attribute_group->addAttributeGroup($this->request->post); #miwoshop-start]]></add>
+        </operation>
+        <operation error="skip">
+            <search index="0"><![CDATA[$this->response->redirect($this->url->link('catalog/attribute_group', 'token=' . $this->session->data['token'] . $url, 'SSL'));]]></search>
+            <add position="before"><![CDATA[
+            #miwoshop-start
+            if (isset($this->request->post['button']) and $this->request->post['button'] == 'save') {
+                 $this->response->redirect($this->url->link('catalog/attribute_group/edit', 'attribute_group_id='.$attribute_group_id.'&token=' . $this->session->data['token'] . $url, 'SSL'));
+            }
+
+            if (isset($this->request->post['button']) and $this->request->post['button'] == 'new') {
+                 $this->response->redirect($this->url->link('catalog/attribute_group/add', 'token=' . $this->session->data['token'] . $url, 'SSL'));
+            }
+            #miwoshop-end
+            ]]></add>
+        </operation>
+        <operation error="skip">
+            <search index="1"><![CDATA[$this->response->redirect($this->url->link('catalog/attribute_group', 'token=' . $this->session->data['token'] . $url, 'SSL'));]]></search>
+            <add position="before"><![CDATA[
+            #miwoshop-start
+            if (isset($this->request->post['button']) and $this->request->post['button'] == 'save') {
+                 $this->response->redirect($this->url->link('catalog/attribute_group/edit', 'attribute_group_id='.$this->request->get['attribute_group_id'].'&token=' . $this->session->data['token'] . $url, 'SSL'));
+            }
+
+            if (isset($this->request->post['button']) and $this->request->post['button'] == 'new') {
+                 $this->response->redirect($this->url->link('catalog/attribute_group/add', 'token=' . $this->session->data['token'] . $url, 'SSL'));
+            }
+            #miwoshop-end
+            ]]></add>
+        </operation>
+    </file>
+
+    <file path="admin/controller/catalog/option.php">
+        <operation error="skip">
+            <search><![CDATA[$data['button_remove'] = $this->language->get('button_remove');]]></search>
+            <add position="after"><![CDATA[
+        #miwoshop-start
+        $data['button_savenew'] = $this->language->get('button_savenew');
+        $data['button_saveclose'] = $this->language->get('button_saveclose');
+        #miwoshop-end
+            ]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[$this->model_catalog_option->addOption($this->request->post);]]></search>
+            <add position="replace"><![CDATA[$option_id = $this->model_catalog_option->addOption($this->request->post); #miwoshop-start]]></add>
+        </operation>
+        <operation error="skip">
+            <search index="0"><![CDATA[$this->response->redirect($this->url->link('catalog/option', 'token=' . $this->session->data['token'] . $url, 'SSL'));]]></search>
+            <add position="before"><![CDATA[
+            #miwoshop-start
+            if (isset($this->request->post['button']) and $this->request->post['button'] == 'save') {
+                 $this->response->redirect($this->url->link('catalog/option/edit', 'option_id='.$option_id.'&token=' . $this->session->data['token'] . $url, 'SSL'));
+            }
+
+            if (isset($this->request->post['button']) and $this->request->post['button'] == 'new') {
+                 $this->response->redirect($this->url->link('catalog/option/add', 'token=' . $this->session->data['token'] . $url, 'SSL'));
+            }
+            #miwoshop-end
+            ]]></add>
+        </operation>
+        <operation error="skip">
+            <search index="1"><![CDATA[$this->response->redirect($this->url->link('catalog/option', 'token=' . $this->session->data['token'] . $url, 'SSL'));]]></search>
+            <add position="before"><![CDATA[
+            #miwoshop-start
+            if (isset($this->request->post['button']) and $this->request->post['button'] == 'save') {
+                 $this->response->redirect($this->url->link('catalog/option/edit', 'option_id='.$this->request->get['option_id'].'&token=' . $this->session->data['token'] . $url, 'SSL'));
+            }
+
+            if (isset($this->request->post['button']) and $this->request->post['button'] == 'new') {
+                 $this->response->redirect($this->url->link('catalog/option/add', 'token=' . $this->session->data['token'] . $url, 'SSL'));
+            }
+            #miwoshop-end
+            ]]></add>
+        </operation>
+    </file>
+
+    <file path="admin/controller/catalog/download.php">
+        <operation error="skip">
+            <search><![CDATA[$data['button_upload'] = $this->language->get('button_upload');]]></search>
+            <add position="after"><![CDATA[
+        #miwoshop-start
+        $data['button_savenew'] = $this->language->get('button_savenew');
+        $data['button_saveclose'] = $this->language->get('button_saveclose');
+        #miwoshop-end
+            ]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[$this->model_catalog_download->addDownload($this->request->post);]]></search>
+            <add position="replace"><![CDATA[$download_id = $this->model_catalog_download->addDownload($this->request->post); #miwoshop-start]]></add>
+        </operation>
+        <operation error="skip">
+            <search index="0"><![CDATA[$this->response->redirect($this->url->link('catalog/download', 'token=' . $this->session->data['token'] . $url, 'SSL'));]]></search>
+            <add position="before"><![CDATA[
+            #miwoshop-start
+            if (isset($this->request->post['button']) and $this->request->post['button'] == 'save') {
+                 $this->response->redirect($this->url->link('catalog/download/edit', 'download_id='.$download_id.'&token=' . $this->session->data['token'] . $url, 'SSL'));
+            }
+
+            if (isset($this->request->post['button']) and $this->request->post['button'] == 'new') {
+                 $this->response->redirect($this->url->link('catalog/download/add', 'token=' . $this->session->data['token'] . $url, 'SSL'));
+            }
+            #miwoshop-end
+            ]]></add>
+        </operation>
+        <operation error="skip">
+            <search index="1"><![CDATA[$this->response->redirect($this->url->link('catalog/download', 'token=' . $this->session->data['token'] . $url, 'SSL'));]]></search>
+            <add position="before"><![CDATA[
+            #miwoshop-start
+            if (isset($this->request->post['button']) and $this->request->post['button'] == 'save') {
+                 $this->response->redirect($this->url->link('catalog/download/edit', 'download_id='.$this->request->get['download_id'].'&token=' . $this->session->data['token'] . $url, 'SSL'));
+            }
+
+            if (isset($this->request->post['button']) and $this->request->post['button'] == 'new') {
+                 $this->response->redirect($this->url->link('catalog/download/add', 'token=' . $this->session->data['token'] . $url, 'SSL'));
+            }
+            #miwoshop-end
+            ]]></add>
+        </operation>
+    </file>
+
+    <file path="admin/controller/catalog/recurring.php">
+        <operation error="skip">
+            <search><![CDATA[$data['button_save'] = $this->language->get('button_save');]]></search>
+            <add position="after"><![CDATA[
+        #miwoshop-start
+        $data['button_savenew'] = $this->language->get('button_savenew');
+        $data['button_saveclose'] = $this->language->get('button_saveclose');
+        #miwoshop-end
+            ]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[$this->model_catalog_recurring->addRecurring($this->request->post);]]></search>
+            <add position="replace"><![CDATA[$recurring_id = $this->model_catalog_recurring->addRecurring($this->request->post); #miwoshop-start]]></add>
+        </operation>
+        <operation error="skip">
+            <search index="0"><![CDATA[$this->response->redirect($this->url->link('catalog/recurring', 'token=' . $this->session->data['token'] . $url, 'SSL'));]]></search>
+            <add position="before"><![CDATA[
+            #miwoshop-start
+            if (isset($this->request->post['button']) and $this->request->post['button'] == 'save') {
+                 $this->response->redirect($this->url->link('catalog/recurring/edit', 'recurring_id='.$recurring_id.'&token=' . $this->session->data['token'] . $url, 'SSL'));
+            }
+
+            if (isset($this->request->post['button']) and $this->request->post['button'] == 'new') {
+                 $this->response->redirect($this->url->link('catalog/recurring/add', 'token=' . $this->session->data['token'] . $url, 'SSL'));
+            }
+            #miwoshop-end
+            ]]></add>
+        </operation>
+        <operation error="skip">
+            <search index="1"><![CDATA[$this->response->redirect($this->url->link('catalog/recurring', 'token=' . $this->session->data['token'] . $url, 'SSL'));]]></search>
+            <add position="before"><![CDATA[
+            #miwoshop-start
+            if (isset($this->request->post['button']) and $this->request->post['button'] == 'save') {
+                 $this->response->redirect($this->url->link('catalog/recurring/edit', 'recurring_id='.$this->request->get['recurring_id'].'&token=' . $this->session->data['token'] . $url, 'SSL'));
+            }
+
+            if (isset($this->request->post['button']) and $this->request->post['button'] == 'new') {
+                 $this->response->redirect($this->url->link('catalog/recurring/add', 'token=' . $this->session->data['token'] . $url, 'SSL'));
+            }
+            #miwoshop-end
+            ]]></add>
+        </operation>
+    </file>
+
+    <file path="admin/controller/sale/custom_field.php">
+        <operation error="skip">
+            <search><![CDATA[$data['button_save'] = $this->language->get('button_save');]]></search>
+            <add position="after"><![CDATA[
+        #miwoshop-start
+        $data['button_savenew'] = $this->language->get('button_savenew');
+        $data['button_saveclose'] = $this->language->get('button_saveclose');
+        #miwoshop-end
+            ]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[$this->model_sale_custom_field->addCustomField($this->request->post);]]></search>
+            <add position="replace"><![CDATA[$custom_field_id = $this->model_sale_custom_field->addCustomField($this->request->post); #miwoshop-start]]></add>
+        </operation>
+        <operation error="skip">
+            <search index="0"><![CDATA[$this->response->redirect($this->url->link('sale/custom_field', 'token=' . $this->session->data['token'] . $url, 'SSL'));]]></search>
+            <add position="before"><![CDATA[
+            #miwoshop-start
+            if (isset($this->request->post['button']) and $this->request->post['button'] == 'save') {
+                 $this->response->redirect($this->url->link('sale/custom_field/edit', 'custom_field_id='.$custom_field_id.'&token=' . $this->session->data['token'] . $url, 'SSL'));
+            }
+
+            if (isset($this->request->post['button']) and $this->request->post['button'] == 'new') {
+                 $this->response->redirect($this->url->link('sale/custom_field/add', 'token=' . $this->session->data['token'] . $url, 'SSL'));
+            }
+            #miwoshop-end
+            ]]></add>
+        </operation>
+        <operation error="skip">
+            <search index="1"><![CDATA[$this->response->redirect($this->url->link('sale/custom_field', 'token=' . $this->session->data['token'] . $url, 'SSL'));]]></search>
+            <add position="before"><![CDATA[
+            #miwoshop-start
+            if (isset($this->request->post['button']) and $this->request->post['button'] == 'save') {
+                 $this->response->redirect($this->url->link('sale/custom_field/edit', 'recurring_id='.$this->request->get['custom_field_id'].'&token=' . $this->session->data['token'] . $url, 'SSL'));
+            }
+
+            if (isset($this->request->post['button']) and $this->request->post['button'] == 'new') {
+                 $this->response->redirect($this->url->link('sale/custom_field/add', 'token=' . $this->session->data['token'] . $url, 'SSL'));
+            }
+            #miwoshop-end
+            ]]></add>
+        </operation>
+    </file>
+    <file path="admin/model/sale/custom_field.php">
+        <operation error="skip">
+            <search><![CDATA[$custom_field_value_id = $this->db->getLastId();]]></search>
+            <add position="after" offset="6"><![CDATA[		return $custom_field_id; #miwoshop-start]]></add>
+        </operation>
+    </file>
+
+    <file path="admin/controller/{module,shipping,payment,total,feed}/*.php">
+        <operation error="skip">
+            <search><![CDATA[$data['heading_title'] = $this->language->get('heading_title');]]></search>
+            <add position="after"><![CDATA[
+        #miwoshop-start
+        $data['button_savenew'] = $this->language->get('button_savenew');
+        $data['button_saveclose'] = $this->language->get('button_saveclose');
+        #miwoshop-end
+            ]]></add>
+        </operation>
+        <operation error="skip">
+            <search index="0"><![CDATA[$this->session->data['success'] = $this->language->get('text_success');]]></search>
+            <add position="after"><![CDATA[
+            #miwoshop-start
+            if (isset($this->request->post['button']) and $this->request->post['button'] == 'save') {
+                $route = MRequest::getString('route');
+                $module_id = '';
+                if (isset($this->request->get['module_id'])) {
+                    $module_id = '&module_id=' . $this->request->get['module_id'];
+                }
+	            elseif (MiwoShop::get('db')->getDbo()->insertid()) {
+		            $module_id = '&module_id=' . MiwoShop::get('db')->getDbo()->insertid();
+	            }
+                $this->response->redirect($this->url->link($route, 'token=' . $this->session->data['token'] . $module_id, 'SSL'));
+            }
+            #miwoshop-end
+            ]]></add>
+        </operation>
+    </file>
+
+    <file path="admin/controller/extension/{shipping.php,payment.php,total.php,feed.php}">
+        <operation error="skip">
+            <search><![CDATA[$data['column_action'] = $this->language->get('column_action');]]></search>
+            <add position="after"><![CDATA[
+        #miwoshop-start
+        $data['button_enable'] = $this->language->get('button_enable');
+        $data['button_disable'] = $this->language->get('button_disable');
+        #miwoshop-end
+            ]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[$data['extensions'][] = array(]]></search>
+            <add position="after"><![CDATA[                    'extension'  => $extension, #miwoshop-start]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[$data['header'] = $this->load->controller('common/header');]]></search>
+            <add position="after"><![CDATA[
+        $data['token'] = $this->session->data['token']; #miwoshop-start
+            ]]></add>
+        </operation>
+    </file>
+    <file path="admin/view/template/extension/{shipping.tpl,payment.tpl,total.tpl,feed.tpl}">
+        <operation error="skip">
+            <search><![CDATA[<h1><?php echo $heading_title; ?></h1>]]></search>
+            <add position="after"><![CDATA[
+                <div class="pull-right">
+                    <button type="button" data-toggle="tooltip" title="<?php echo $button_enable; ?>" class="button btn-success" onclick="changeStatus(1)"><i class="fa fa-check-circle"></i></button>
+                    <button type="button" data-toggle="tooltip" title="<?php echo $button_disable; ?>" class="button btn-danger" onclick="changeStatus(0)"><i class="fa fa-times-circle"></i></button>
+                </div>
+            ]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[<table class="table table-bordered table-hover">]]></search>
+            <add position="before"><![CDATA[        <form id="form" method="post">]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[<td class="text-left"><?php echo $column_name; ?></td>]]></search>
+            <add position="before"><![CDATA[            <td width="1" style="text-align: center;"><input type="checkbox" onclick="$('input[name*=\'selected\']').attr('checked', this.checked);" /></td>]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[<td class="text-left"><?php echo $extension['name']; ?></td>]]></search>
+            <add position="before"><![CDATA[            <td style="text-align: center;"><input type="checkbox" name="selected[]" value="<?php echo $extension['extension']; ?>" /></td>]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[</table>]]></search>
+            <add position="after"><![CDATA[      </form>]]></add>
+        </operation>
+    </file>
+    <file path="admin/view/template/extension/shipping.tpl">
+        <operation error="skip">
+            <search><![CDATA[<?php echo $footer; ?>]]></search>
+            <add position="before"><![CDATA[
+        <script type="text/javascript"><!--
+        function changeStatus(status){
+            $.ajax({
+                url: 'index.php?route=common/edit/changeStatus&type=shipping&status='+ status +'&token=<?php echo $token; ?>',
+                dataType: 'json',
+                data: $("form").serialize(),
+                success: function(json) {
+                    if(json){
+                        $('.panel.panel-default').before('<div class="alert alert-warning"><i class="fa fa-warning"></i> ' + json.warning + '<button type="button" class="close" data-dismiss="alert">×</button></div>');
+                    }
+                    else{
+                        location.reload();
+                    }
+                }
+            });
+        }
+        //--></script>
+            ]]></add>
+        </operation>
+    </file>
+    <file path="admin/view/template/extension/payment.tpl">
+        <operation error="skip">
+            <search><![CDATA[<?php echo $footer; ?>]]></search>
+            <add position="before"><![CDATA[
+        <script type="text/javascript"><!--
+        function changeStatus(status){
+            $.ajax({
+                url: 'index.php?route=common/edit/changeStatus&type=payment&status='+ status +'&token=<?php echo $token; ?>',
+                dataType: 'json',
+                data: $("form").serialize(),
+                success: function(json) {
+                    if(json){
+                        $('.panel.panel-default').before('<div class="alert alert-warning"><i class="fa fa-warning"></i> ' + json.warning + '<button type="button" class="close" data-dismiss="alert">×</button></div>');
+                    }
+                    else{
+                        location.reload();
+                    }
+                }
+            });
+        }
+        //--></script>
+            ]]></add>
+        </operation>
+    </file>
+    <file path="admin/view/template/extension/total.tpl">
+        <operation error="skip">
+            <search><![CDATA[<?php echo $footer; ?>]]></search>
+            <add position="before"><![CDATA[
+        <script type="text/javascript"><!--
+        function changeStatus(status){
+            $.ajax({
+                url: 'index.php?route=common/edit/changeStatus&type=total&status='+ status +'&token=<?php echo $token; ?>',
+                dataType: 'json',
+                data: $("form").serialize(),
+                success: function(json) {
+                    if(json){
+                        $('.panel.panel-default').before('<div class="alert alert-warning"><i class="fa fa-warning"></i> ' + json.warning + '<button type="button" class="close" data-dismiss="alert">×</button></div>');
+                    }
+                    else{
+                        location.reload();
+                    }
+                }
+            });
+        }
+        //--></script>
+            ]]></add>
+        </operation>
+    </file>
+    <file path="admin/view/template/extension/feed.tpl">
+        <operation error="skip">
+            <search><![CDATA[<?php echo $footer; ?>]]></search>
+            <add position="before"><![CDATA[
+        <script type="text/javascript"><!--
+        function changeStatus(status){
+            $.ajax({
+                url: 'index.php?route=common/edit/changeStatus&type=feed&status='+ status +'&token=<?php echo $token; ?>',
+                dataType: 'json',
+                data: $("form").serialize(),
+                success: function(json) {
+                    if(json){
+                        $('.panel.panel-default').before('<div class="alert alert-warning"><i class="fa fa-warning"></i> ' + json.warning + '<button type="button" class="close" data-dismiss="alert">×</button></div>');
+                    }
+                    else{
+                        location.reload();
+                    }
+                }
+            });
+        }
+        //--></script>
+            ]]></add>
+        </operation>
+    </file>
+
+    <file path="admin/controller/setting/setting.php">
+        <operation error="skip">
+            <search><![CDATA[$data['button_cancel'] = $this->language->get('button_cancel');]]></search>
+            <add position="after"><![CDATA[
+        #miwoshop-start
+        $data['button_savenew'] = $this->language->get('button_savenew');
+        $data['button_saveclose'] = $this->language->get('button_saveclose');
+        #miwoshop-end
+            ]]></add>
+        </operation>
+        <operation error="skip">
+            <search index="0"><![CDATA[$this->response->redirect($this->url->link('setting/store', 'token=' . $this->session->data['token'], 'SSL'));]]></search>
+            <add position="before"><![CDATA[
+            #miwoshop-start
+            if (isset($this->request->post['button']) and $this->request->post['button'] == 'save') {
+                 $this->response->redirect($this->url->link('setting/setting', 'token=' . $this->session->data['token'] . $url, 'SSL'));
+            }
+
+            if (isset($this->request->post['button']) and $this->request->post['button'] == 'new') {
+                 $this->response->redirect($this->url->link('setting/store/add', 'token=' . $this->session->data['token'] . $url, 'SSL'));
+            }
+            #miwoshop-end
+            ]]></add>
+        </operation>
+    </file>
+    <file path="admin/view/template/setting/setting.tpl">
+        <operation error="skip">
+            <search><![CDATA[<button type="submit" form="form-setting" data-toggle="tooltip" title="<?php echo $button_save; ?>" class="button button-primary"><i class="fa fa-save"></i></button>]]></search>
+            <add position="replace"><![CDATA[
+            <button type="submit" onclick="save('save')" form="form-setting" data-toggle="tooltip" title="<?php echo $button_save; ?>" class="button button-primary"><i class="fa fa-save"></i></button>
+            <button type="submit" form="form-setting" data-toggle="tooltip" title="<?php echo $button_saveclose; ?>" class="button button-primary" data-original-title="Save & Close"><i class="fa fa-sign-out"></i></button>
+            ]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[<?php echo $footer; ?>]]></search>
+            <add position="before"><![CDATA[
+        <script type="text/javascript"><!--
+        function save(type){
+            var input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'button';
+            input.value = type;
+            form = $("form[id^='form-']").append(input);
+            form.submit();
+        }
+        //--></script>
+            ]]></add>
+        </operation>
+    </file>
+
+    <file path="admin/controller/setting/store.php">
+        <operation error="skip">
+            <search><![CDATA[$data['button_cancel'] = $this->language->get('button_cancel');]]></search>
+            <add position="after"><![CDATA[
+        #miwoshop-start
+        $data['button_savenew'] = $this->language->get('button_savenew');
+        $data['button_saveclose'] = $this->language->get('button_saveclose');
+        #miwoshop-end
+            ]]></add>
+        </operation>
+        <operation error="skip">
+            <search index="0"><![CDATA[$this->response->redirect($this->url->link('setting/store', 'token=' . $this->session->data['token'], 'SSL'));]]></search>
+            <add position="before"><![CDATA[
+            #miwoshop-start
+            if (isset($this->request->post['button']) and $this->request->post['button'] == 'save') {
+                 $this->response->redirect($this->url->link('setting/store/edit', 'store_id='.$store_id.'&token=' . $this->session->data['token'] . $url, 'SSL'));
+            }
+
+            if (isset($this->request->post['button']) and $this->request->post['button'] == 'new') {
+                 $this->response->redirect($this->url->link('setting/store/add', 'token=' . $this->session->data['token'] . $url, 'SSL'));
+            }
+            #miwoshop-end
+            ]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[$this->response->redirect($this->url->link('setting/store', 'token=' . $this->session->data['token'] . '&store_id=' . $this->request->get['store_id'], 'SSL'));]]></search>
+            <add position="before"><![CDATA[
+            #miwoshop-start
+            if (isset($this->request->post['button']) and $this->request->post['button'] == 'save') {
+                 $this->response->redirect($this->url->link('setting/store/edit', 'store_id='.$this->request->get['store_id'].'&token=' . $this->session->data['token'] . $url, 'SSL'));
+            }
+
+            if (isset($this->request->post['button']) and $this->request->post['button'] == 'new') {
+                 $this->response->redirect($this->url->link('setting/store/add', 'token=' . $this->session->data['token'] . $url, 'SSL'));
+            }
+            #miwoshop-end
+            ]]></add>
+        </operation>
+    </file>
+
+    <file path="admin/controller/localisation/country.php">
+        <operation error="skip">
+            <search><![CDATA[$data['button_delete'] = $this->language->get('button_delete');]]></search>
+            <add position="after"><![CDATA[
+        #miwoshop-start
+        $data['button_enable']  = $this->language->get('button_enable');
+        $data['button_disable'] = $this->language->get('button_disable');
+
+        $data['column_status'] = $this->language->get('column_status');
+        $data['text_enabled']  = $this->language->get('text_enabled');
+        $data['text_disabled'] = $this->language->get('text_disabled');
+        #miwoshop-end
+	        ]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA['iso_code_2' => $result['iso_code_2'],]]></search>
+            <add position="before"><![CDATA[                'status'     => $result['status'], #miwoshop-start]]></add>
+        </operation>
+    </file>
+
+    <file path="admin/controller/localisation/zone.php">
+        <operation error="skip">
+            <search><![CDATA[$data['button_delete'] = $this->language->get('button_delete');]]></search>
+            <add position="after"><![CDATA[
+        #miwoshop-start
+        $data['button_enable']  = $this->language->get('button_enable');
+        $data['button_disable'] = $this->language->get('button_disable');
+
+        $data['column_status'] = $this->language->get('column_status');
+        $data['text_enabled']  = $this->language->get('text_enabled');
+        $data['text_disabled'] = $this->language->get('text_disabled');
+        #miwoshop-end
+            ]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA['code'    => $result['code'],]]></search>
+            <add position="before"><![CDATA[                'status'     => $result['status'], #miwoshop-start]]></add>
+        </operation>
+    </file>
+
+    <file path="admin/language/*/*.php">
+        <operation error="skip">
+            <search><![CDATA[$_['button_submit']                 = 'Submit';]]></search>
+            <add position="after"><![CDATA[
+#miwoshop-start
+$_['button_enable']          = 'Enable';
+$_['button_disable']         = 'Disable';
+$_['button_savenew']         = 'Save & New';
+$_['button_saveclose']       = 'Save & Close';
+$_['column_status']          = 'Status';
+#miwoshop-end
+            ]]></add>
+        </operation>
+    </file>
+
+    <file path="admin/language/*/catalog/category.php">
+        <operation error="skip">
+            <search><![CDATA[$_['column_action']          = 'Action';]]></search>
+            <add position="after"><![CDATA[$_['column_status']          = 'Status'; #miwoshop-start]]></add>
+        </operation>
+    </file>
+
+    <file path="admin/language/*/catalog/information.php">
+        <operation error="skip">
+            <search><![CDATA[$_['heading_title']          = 'Information';]]></search>
+            <add position="after"><![CDATA[$_['column_status']          = 'Status'; #miwoshop-start]]></add>
+        </operation>
+    </file>
+
+    <file path="admin/view/template/{module,shipping,payment,total,feed}/*.tpl">
+        <operation error="skip">
+            <search regex="true"><![CDATA[~<button type="submit" form="form-(.+)" data-toggle="tooltip" title="<\?php echo \$button_save; \?>" class="button button-primary"><i class="fa fa-save"></i></button>~]]></search>
+            <add><![CDATA[
+            <button type="submit" onclick="save('save')" form="form-$1" data-toggle="tooltip" title="" class="button button-primary" data-original-title="Save"><i class="fa fa-save"></i></button>
+            <button type="submit" form="form-$1" data-toggle="tooltip" title="" class="button button-primary" data-original-title="Save & Close"><i class="fa fa-sign-out"></i></button>
+            ]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[<?php echo $footer; ?>]]></search>
+            <add position="before"><![CDATA[
+        <script type="text/javascript"><!--
+        function save(type){
+            var input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'button';
+            input.value = type;
+            form = $("form[id^='form-']").append(input);
+            form.submit();
+        }
+        //--></script>
+            ]]></add>
+        </operation>
+    </file>
+    <file path="admin/view/template/catalog/*_form.tpl">
+        <operation error="skip">
+            <search regex="true"><![CDATA[~<button type="submit" form="form-(.+)" data-toggle="tooltip" title="<\?php echo \$button_save; \?>" class="button button-primary"><i class="fa fa-save"></i></button>~]]></search>
+            <add><![CDATA[
+            <button type="submit" onclick="save('save')" form="form-$1" data-toggle="tooltip" title="<?php echo \$button_save; ?>" class="button button-primary" data-original-title="Save"><i class="fa fa-save"></i></button>
+            <button type="submit" form="form-$1" data-toggle="tooltip" title="<?php echo \$button_saveclose; ?>" class="button button-primary" data-original-title="Save & Close"><i class="fa fa-sign-out"></i></button>
+            <button type="submit" onclick="save('new')" form="form-$1" data-toggle="tooltip" title="<?php echo \$button_savenew; ?>" class="button button-primary" data-original-title="Save & New"><i class="fa fa-sign-in"></i></button>
+            ]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[<?php echo $footer; ?>]]></search>
+            <add position="before"><![CDATA[
+        <script type="text/javascript"><!--
+        function save(type){
+            var input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'button';
+            input.value = type;
+            form = $("form[id^='form-']").append(input);
+            form.submit();
+        }
+        //--></script>
+            ]]></add>
+        </operation>
+    </file>
+    <file path="admin/view/template/sale/custom_field_form.tpl">
+        <operation error="skip">
+            <search regex="true"><![CDATA[~<button type="submit" form="form-(.+)" data-toggle="tooltip" title="<\?php echo \$button_save; \?>" class="button button-primary"><i class="fa fa-save"></i></button>~]]></search>
+            <add><![CDATA[
+            <button type="submit" onclick="save('save')" form="form-$1" data-toggle="tooltip" title="<?php echo \$button_save; ?>" class="button button-primary" data-original-title="Save"><i class="fa fa-save"></i></button>
+            <button type="submit" form="form-$1" data-toggle="tooltip" title="<?php echo \$button_saveclose; ?>" class="button button-primary" data-original-title="Save & Close"><i class="fa fa-sign-out"></i></button>
+            <button type="submit" onclick="save('new')" form="form-$1" data-toggle="tooltip" title="<?php echo \$button_savenew; ?>" class="button button-primary" data-original-title="Save & New"><i class="fa fa-sign-in"></i></button>
+            ]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[<?php echo $footer; ?>]]></search>
+            <add position="before"><![CDATA[
+        <script type="text/javascript"><!--
+        function save(type){
+            var input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'button';
+            input.value = type;
+            form = $("form[id^='form-']").append(input);
+            form.submit();
+        }
+        //--></script>
+            ]]></add>
+        </operation>
+    </file>
+    <file path="admin/view/template/catalog/information_list.tpl">
+        <operation error="skip">
+            <search><![CDATA[<button type="button" data-toggle="tooltip" title="<?php echo $button_delete; ?>" class="button btn-danger" onclick="confirm('<?php echo $text_confirm; ?>') ? $('#form-information').submit() : false;"><i class="fa fa-trash-o"></i></button>]]></search>
+            <add position="replace"><![CDATA[
+            <button type="button" data-toggle="tooltip" title="<?php echo $button_enable; ?>" class="button btn-success" onclick="changeStatus(1)"><i class="fa fa-check-circle"></i></button>
+            <button type="button" data-toggle="tooltip" title="<?php echo $button_disable; ?>" class="button btn-danger" onclick="changeStatus(0)"><i class="fa fa-times-circle"></i></button>
+            <button type="button" data-toggle="tooltip" title="<?php echo $button_delete; ?>" class="button btn-danger" onclick="confirm('<?php echo $text_confirm; ?>') ? $('#form-information').submit() : false;"><i class="fa fa-trash-o"></i></button>
+            ]]></add>
+        </operation>
+    </file>
+    <file path="admin/view/template/catalog/category_list.tpl">
+        <operation error="skip">
+            <search><![CDATA[<button type="button" data-toggle="tooltip" title="<?php echo $button_delete; ?>" class="button btn-danger" onclick="confirm('<?php echo $text_confirm; ?>') ? $('#form-category').submit() : false;"><i class="fa fa-trash-o"></i></button>]]></search>
+            <add position="replace"><![CDATA[
+            <button type="button" data-toggle="tooltip" title="<?php echo $button_enable; ?>" class="button btn-success" onclick="changeStatus(1)"><i class="fa fa-check-circle"></i></button>
+            <button type="button" data-toggle="tooltip" title="<?php echo $button_disable; ?>" class="button btn-danger" onclick="changeStatus(0)"><i class="fa fa-times-circle"></i></button>
+            <button type="button" data-toggle="tooltip" title="<?php echo $button_delete; ?>" class="button btn-danger" onclick="confirm('<?php echo $text_confirm; ?>') ? $('#form-category').submit() : false;"><i class="fa fa-trash-o"></i></button>
+            ]]></add>
+        </operation>
+    </file>
+    <file path="admin/view/template/catalog/review_list.tpl">
+        <operation error="skip">
+            <search><![CDATA[<button type="button" data-toggle="tooltip" title="<?php echo $button_delete; ?>" class="button btn-danger" onclick="confirm('<?php echo $text_confirm; ?>') ? $('#form-review').submit() : false;"><i class="fa fa-trash-o"></i></button>]]></search>
+            <add position="replace"><![CDATA[
+            <button type="button" data-toggle="tooltip" title="<?php echo $button_enable; ?>" class="button btn-success" onclick="changeStatus(1)"><i class="fa fa-check-circle"></i></button>
+            <button type="button" data-toggle="tooltip" title="<?php echo $button_disable; ?>" class="button btn-danger" onclick="changeStatus(0)"><i class="fa fa-times-circle"></i></button>
+            <button type="button" data-toggle="tooltip" title="<?php echo $button_delete; ?>" class="button btn-danger" onclick="confirm('<?php echo $text_confirm; ?>') ? $('#form-review').submit() : false;"><i class="fa fa-trash-o"></i></button>
+            ]]></add>
+        </operation>
+    </file>
+    <file path="admin/view/template/catalog/product_list.tpl">
+        <operation error="skip">
+            <search><![CDATA[<button type="button" data-toggle="tooltip" title="<?php echo $button_delete; ?>" class="button btn-danger" onclick="confirm('<?php echo $text_confirm; ?>') ? $('#form-product').submit() : false;"><i class="fa fa-trash-o"></i></button>]]></search>
+            <add position="replace"><![CDATA[
+            <button type="button" data-toggle="tooltip" title="<?php echo $button_enable; ?>" class="button btn-success" onclick="changeStatus(1)"><i class="fa fa-check-circle"></i></button>
+            <button type="button" data-toggle="tooltip" title="<?php echo $button_disable; ?>" class="button btn-danger" onclick="changeStatus(0)"><i class="fa fa-times-circle"></i></button>
+            <button type="button" data-toggle="tooltip" title="<?php echo $button_delete; ?>" class="button btn-danger" onclick="confirm('<?php echo $text_confirm; ?>') ? $('#form-product').submit() : false;"><i class="fa fa-trash-o"></i></button>
+            ]]></add>
+        </operation>
+    </file>
+    <file path="admin/view/template/catalog/{information_list,category_list,product_list,review_list}.tpl">
+        <operation error="skip">
+            <search><![CDATA[<td class="text-right"><?php if ($sort == 'sort_order') { ?>]]></search>
+            <add position="before"><![CDATA[
+            <td class="text-left"><?php if ($sort == 'status') { ?>
+                    <a href="<?php echo $sort_status; ?>" class="<?php echo strtolower($order); ?>"><?php echo $column_status; ?></a>
+                    <?php } else { ?>
+                    <a href="<?php echo $sort_status; ?>"><?php echo $column_status; ?></a>
+                    <?php } ?></td>
+            ]]></add>
+        </operation>
+        <operation error="skip">
+            <search regex="true"><![CDATA[~<td class="text-right"><\?php echo \$(.+)\['sort_order'\]; \?></td>~]]></search>
+            <add><![CDATA[
+            <td class="text-right"><?php echo \$$1['status']; ?></td>
+            <td class="text-right"><?php echo \$$1['sort_order']; ?></td>
+            ]]></add>
+        </operation>
+    </file>
+
+    <file path="admin/view/template/catalog/category_list.tpl">
+        <operation error="skip">
+            <search><![CDATA[<?php echo $footer; ?>]]></search>
+            <add position="before"><![CDATA[
+        <script type="text/javascript"><!--
+        function changeStatus(status){
+            $.ajax({
+                url: 'index.php?route=common/edit/changeStatus&type=category&status='+ status +'&token=<?php echo $token; ?>',
+                dataType: 'json',
+                data: $("form[id^='form-']").serialize(),
+                success: function(json) {
+                    if(json){
+                        $('.panel.panel-default').before('<div class="alert alert-warning"><i class="fa fa-warning"></i> ' + json.warning + '<button type="button" class="close" data-dismiss="alert">×</button></div>');
+                    }
+                    else{
+                        location.reload();
+                    }
+                }
+            });
+        }
+        //--></script>
+            ]]></add>
+        </operation>
+    </file>
+    <file path="admin/view/template/catalog/information_list.tpl">
+        <operation error="skip">
+            <search><![CDATA[<?php echo $footer; ?>]]></search>
+            <add position="before"><![CDATA[
+        <script type="text/javascript"><!--
+        function changeStatus(status){
+            $.ajax({
+                url: 'index.php?route=common/edit/changeStatus&type=information&status='+ status +'&token=<?php echo $token; ?>',
+                dataType: 'json',
+                data: $("form[id^='form-']").serialize(),
+                success: function(json) {
+                    if(json){
+                        $('.panel.panel-default').before('<div class="alert alert-warning"><i class="fa fa-warning"></i> ' + json.warning + '<button type="button" class="close" data-dismiss="alert">×</button></div>');
+                    }
+                    else{
+                        location.reload();
+                    }
+                }
+            });
+        }
+        //--></script>
+            ]]></add>
+        </operation>
+    </file>
+    <file path="admin/view/template/catalog/product_list.tpl">
+        <operation error="skip">
+            <search><![CDATA[<?php echo $footer; ?>]]></search>
+            <add position="before"><![CDATA[
+        <script type="text/javascript"><!--
+        function changeStatus(status){
+            $.ajax({
+                url: 'index.php?route=common/edit/changeStatus&type=product&status='+ status +'&token=<?php echo $token; ?>',
+                dataType: 'json',
+                data: $("form[id^='form-']").serialize(),
+                success: function(json) {
+                    if(json){
+                        $('.panel.panel-default').before('<div class="alert alert-warning"><i class="fa fa-warning"></i> ' + json.warning + '<button type="button" class="close" data-dismiss="alert">×</button></div>');
+                    }
+                    else{
+                        location.reload();
+                    }
+                }
+            });
+        }
+        //--></script>
+            ]]></add>
+        </operation>
+    </file>
+    <file path="admin/view/template/catalog/review_list.tpl">
+        <operation error="skip">
+            <search><![CDATA[<?php echo $footer; ?>]]></search>
+            <add position="before"><![CDATA[
+        <script type="text/javascript"><!--
+        function changeStatus(status){
+            $.ajax({
+                url: 'index.php?route=common/edit/changeStatus&type=review&status='+ status +'&token=<?php echo $token; ?>',
+                dataType: 'json',
+                data: $("form[id^='form-']").serialize(),
+                success: function(json) {
+                    if(json){
+                        $('.panel.panel-default').before('<div class="alert alert-warning"><i class="fa fa-warning"></i> ' + json.warning + '<button type="button" class="close" data-dismiss="alert">×</button></div>');
+                    }
+                    else{
+                        location.reload();
+                    }
+                }
+            });
+        }
+        //--></script>
+            ]]></add>
+        </operation>
+    </file>
+
+    <file path="admin/model/catalog/category.php">
+        <operation error="skip">
+            <search><![CDATA[$sql = "SELECT cp.category_id AS category_id, GROUP_CONCAT(cd1.name ORDER BY cp.level SEPARATOR '&nbsp;&nbsp;&gt;&nbsp;&nbsp;') AS name, c1.parent_id, c1.sort_order FROM " . DB_PREFIX . "category_path cp LEFT JOIN " . DB_PREFIX . "category c1 ON (cp.category_id = c1.category_id) LEFT JOIN " . DB_PREFIX . "category c2 ON (cp.path_id = c2.category_id) LEFT JOIN " . DB_PREFIX . "category_description cd1 ON (cp.path_id = cd1.category_id) LEFT JOIN " . DB_PREFIX . "category_description cd2 ON (cp.category_id = cd2.category_id) WHERE cd1.language_id = '" . (int)$this->config->get('config_language_id') . "' AND cd2.language_id = '" . (int)$this->config->get('config_language_id') . "'";]]></search>
+            <add position="replace"><![CDATA[$sql = "SELECT cp.category_id AS category_id, GROUP_CONCAT(cd1.name ORDER BY cp.level SEPARATOR '&nbsp;&nbsp;&gt;&nbsp;&nbsp;') AS name, c1.parent_id, c1.status, c1.sort_order FROM " . DB_PREFIX . "category_path cp LEFT JOIN " . DB_PREFIX . "category c1 ON (cp.category_id = c1.category_id) LEFT JOIN " . DB_PREFIX . "category c2 ON (cp.path_id = c2.category_id) LEFT JOIN " . DB_PREFIX . "category_description cd1 ON (cp.path_id = cd1.category_id) LEFT JOIN " . DB_PREFIX . "category_description cd2 ON (cp.category_id = cd2.category_id) WHERE cd1.language_id = '" . (int)$this->config->get('config_language_id') . "' AND cd2.language_id = '" . (int)$this->config->get('config_language_id') . "'"; #miwoshop-start]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA['name',]]></search>
+            <add position="after"><![CDATA['status', #miwoshop-start]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[$sql .= " ORDER BY cd1.name";]]></search>
+            <add position="replace"><![CDATA[$sql .= " ORDER BY name";]]></add>
+        </operation>
+    </file>
+    <file path="admin/model/catalog/information.php">
+        <operation error="skip">
+            <search><![CDATA['id.title',]]></search>
+            <add position="replace"><![CDATA['i.status', #miwoshop-start]]></add>
+        </operation>
+    </file>
+
+    <!-- Fix language IDs and Sync Languages button START -->
+    <file path="admin/controller/setting/store.php">
+        <operation error="skip">
+            <search><![CDATA[$data['button_delete'] = $this->language->get('button_delete');]]></search>
+            <add position="after"><![CDATA[
+        #miwoshop-start
+        $data['button_lang_sync'] = $this->language->get('button_lang_sync');
+        $data['button_fix_lang_ids'] = $this->language->get('button_fix_lang_ids');
+        #miwoshop-end
+            ]]></add>
+        </operation>
+    </file>
+    <file path="admin/language/*/setting/store.php">
+        <operation error="skip">
+            <search><![CDATA[$_['error_store']]]></search>
+            <add position="after"><![CDATA[
+#miwoshop-start
+$_['button_lang_sync']                      = 'Synchronize Languages';
+$_['button_fix_lang_ids']                   = 'Fix Language IDs';
+#miwoshop-end
+            ]]></add>
+        </operation>
+    </file>
+
+    <file path="admin/view/template/setting/store_list.tpl">
+        <operation error="skip">
+            <search><![CDATA[<button type="button" data-toggle="tooltip" title="<?php echo $button_delete; ?>" class="button btn-danger" onclick="confirm('<?php echo $text_confirm; ?>') ? $('#form-store').submit() : false;"><i class="fa fa-trash-o"></i></button>]]></search>
+            <add position="after"><![CDATA[<button type="button" data-toggle="tooltip" title="<?php echo $button_fix_lang_ids; ?>" class="button button-primary" onclick="fixIds();"><?php echo $button_fix_lang_ids; ?></button>
+            <button type="button" data-toggle="tooltip" title="<?php echo $button_lang_sync; ?>" class="button button-primary" onclick="fix();" class="button"><?php echo $button_lang_sync; ?></button>]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[<?php echo $footer; ?>]]></search>
+            <add position="before"><![CDATA[
+        <script type="text/javascript"><!--
+        function fix(){
+            $.ajax({
+                url: 'index.php?route=common/edit/fixLanguage',
+                type: 'post',
+                dataType: 'json',
+                success : function(data) {
+                    $('.alert.alert-success, .alert.alert-warning, .alert.alert-attention, .alert.alert-info, .alert.alert-error').remove();
+
+                    if (data['error']) {
+                        $('.panel.panel-default').before('<div class="alert alert-warning"><i class="fa fa-warning"></i> ' + data['error'] + '<button type="button" class="close" data-dismiss="alert">×</button></div>');
+
+                        $('.alert.alert-warning').fadeIn('slow');
+                    }
+
+                    if (data['success']) {
+                        $('.panel.panel-default').before('<div class="alert alert-success"><i class="fa fa-check-circle"></i> ' + data['success'] + '<button type="button" class="close" data-dismiss="alert">×</button></div>');
+
+                        $('.alert.alert-success').fadeIn('slow');
+                    }
+                }
+            });
+        }
+
+        function fixIds(){
+            $.ajax({
+                url: 'index.php?route=common/edit/fixLanguageIds',
+                type: 'post',
+                dataType: 'json',
+                success : function(data) {
+                    $('.alert.alert-success, .alert.alert-warning, .alert.alert-attention, .alert.alert-info, .alert.alert-error').remove();
+
+                    if (data['error']) {
+                        $('.panel.panel-default').before('<div class="alert alert-warning"><i class="fa fa-warning"></i> ' + data['error'] + '<button type="button" class="close" data-dismiss="alert">×</button></div>');
+
+                        $('.alert.alert-warning').fadeIn('slow');
+                    }
+
+                    if (data['success']) {
+                        $('.panel.panel-default').before('<div class="alert alert-success"><i class="fa fa-check-circle"></i> ' + data['success'] + '<button type="button" class="close" data-dismiss="alert">×</button></div>');
+
+                        $('.alert.alert-success').fadeIn('slow');
+                    }
+                }
+            });
+        }
+        //--></script>
+            ]]></add>
+        </operation>
+    </file>
+    <!-- Fix language IDs and Sync Languages button END -->
+</modification>

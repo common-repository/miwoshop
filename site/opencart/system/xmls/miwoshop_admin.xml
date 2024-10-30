@@ -1,0 +1,1823 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modification>
+    <name>Admin Modifications</name>
+    <code>miwoshop_admin</code>
+    <version>1.0.0</version>
+    <link>http://www.miwisoft.com</link>
+    <author>Miwisoft LLC</author>
+
+    <file path="admin/model/tool/image.php" >
+        <operation error="log">
+            <search><![CDATA[return HTTPS_CATALOG . 'image/' . $new_image;]]></search>
+            <add position="replace"><![CDATA[           return HTTPS_IMAGE . $new_image; #miwoshop-start]]></add>
+        </operation>
+        <operation error="log">
+            <search><![CDATA[return HTTP_CATALOG . 'image/' . $new_image;]]></search>
+            <add position="replace"><![CDATA[           return HTTP_IMAGE . $new_image; #miwoshop-start]]></add>
+        </operation>
+    </file>
+
+    <file path="admin/model/localisation/language.php" >
+        <operation error="log">
+            <search  miwomod="true"><![CDATA[$query = $this->db->query("SELECT DISTINCT * FROM " . DB_PREFIX . "language WHERE language_id = '" . (int)$language_id . "'");]]></search>
+            <add position="replace" offset="2"><![CDATA[
+        #miwoshop-start
+        $language_data = MiwoShop::get('db')->getLanguage($language_id);
+
+        return $language_data;
+        #miwoshop-end
+        ]]></add>
+        </operation>
+        <operation error="log">
+            <search miwomod="true"><![CDATA[public function getLanguages($data = array()) {]]></search>
+            <add position="before"><![CDATA[
+    #miwoshop-start
+    public function getLanguages($data = array()) {
+        $language_data = $this->cache->get('language');
+
+        if (!$language_data) {
+            $language_data = MiwoShop::get('db')->getLanguageList();
+
+            // $this->cache->set('language', $language_data);
+        }
+
+        return $language_data;
+    }
+    #miwoshop-end
+    ]]></add>
+        </operation>
+        <operation error="log">
+            <search index="1"><![CDATA[public function getLanguages($data = array()) {]]></search>
+            <add position="replace"><![CDATA[    public function getLanguagesOld($data = array()) { #miwoshop]]></add>
+        </operation>
+        <operation error="log">
+            <search><![CDATA[$query = $this->db->query("SELECT COUNT(*) AS total FROM " . DB_PREFIX . "language");]]></search>
+            <add position="replace"><![CDATA[        $query = $this->db->query("SELECT COUNT(*) AS total FROM " . DB_PREFIX . "languages"); #miwoshop]]></add>
+        </operation>
+    </file>
+
+    <file path="admin/controller/common/header.php">
+        <operation error="log">
+            <search><![CDATA[$this->load->model('setting/store');]]></search>
+            <add position="before"><![CDATA[
+            #miwoshop-start
+            $processing_total = $this->model_sale_order->getTotalOrdersByProcessingStatus();
+
+            $data['alert_order'] = $return_total + $processing_total;
+            $data['alert_customer'] = $customer_total;
+            $data['alert_product'] = $product_total + $review_total + $affiliate_total;
+
+            $this->load->language('common/menu');
+
+            $this->load->model('user/user');
+
+            $this->load->model('tool/image');
+
+            $user_info = $this->model_user_user->getUser($this->user->getId());
+
+            if ($user_info) {
+                $data['firstname'] = $user_info['firstname'];
+                $data['lastname'] = $user_info['lastname'];
+                $data['username'] = $user_info['username'];
+
+                $data['user_group'] = $user_info['user_group'] ;
+
+                if (is_file(DIR_IMAGE . $user_info['image'])) {
+                    $data['image'] = $this->model_tool_image->resize($user_info['image'], 45, 45);
+                } else {
+                    $data['image'] = $this->model_tool_image->resize('no_image.png', 45, 45);
+                }
+            } else {
+                $data['username'] = '';
+                $data['image'] = '';
+            }
+            #miwoshop-end
+            ]]></add>
+        </operation>
+		
+		<operation error="log">
+            <search><![CDATA[$results = $this->model_setting_store->getStores();]]></search>
+            <add position="before"><![CDATA[            $data['url_user'] = $this->url->link('user/user/edit', 'user_id='.$this->user->getId().'&token=' . $this->session->data['token'], 'SSL'); #miwoshop-start]]></add>
+        </operation>
+    </file>
+
+    <file path="admin/controller/sale/order.php">
+        <operation error="log">
+            <search><![CDATA[curl_setopt($curl, CURLOPT_COOKIE, session_name() . '=' . $this->session->data['cookie'] . ';');]]></search>
+            <add position="replace"><![CDATA[curl_setopt($curl, CURLOPT_COOKIE, $this->session->data['cookie']['name'].'=' . $this->session->data['cookie']['id'] . ';'); #miwoshop-start]]></add>
+        </operation>        
+		<operation error="log">
+            <search><![CDATA[if ($key != 'route' && $key != 'token' && $key != 'store_id') {]]></search>
+            <add position="replace"><![CDATA[if ($key != 'route' && $key != 'token' && $key != 'Itemid') { #miwoshop-start
+					if ($key == 'view' && $value == 'admin') {
+						continue;
+					} #miwoshop-end]]></add>
+        </operation>
+		<operation error="log">
+            <search><![CDATA[foreach ($this->request->get as $key => $value) {]]></search>
+            <add position="before"><![CDATA[				if ($this->request->post['view'] == 'admin') { #miwoshop-start
+				unset($this->request->post['view']);
+			} #miwoshop-end]]></add>
+        </operation>
+        <operation error="log">
+            <search><![CDATA[$data['shipping'] = $this->url->link('sale/order/shipping', 'token=' . $this->session->data['token'], 'SSL');]]></search>
+            <add position="replace"><![CDATA[$data['shipping'] = $this->url->link('sale/order/shipping', 'format=raw&tmpl=component&token=' . $this->session->data['token'], 'SSL');#miwoshop-start]]></add>
+        </operation>
+        <operation error="log">
+            <search><![CDATA[$data['shipping'] = $this->url->link('sale/order/shipping', 'token=' . $this->session->data['token'] . '&order_id=' . (int)$this->request->get['order_id'], 'SSL');]]></search>
+            <add position="replace"><![CDATA[$data['shipping'] = $this->url->link('sale/order/shipping', 'format=raw&tmpl=component&token=' . $this->session->data['token'] . '&order_id=' . (int)$this->request->get['order_id'], 'SSL');#miwoshop-start]]></add>
+        </operation>
+    </file>
+
+    <file path="admin/controller/common/menu.php">
+        <operation error="log">
+            <search><![CDATA[$data['text_openbay_order_import'] = $this->language->get('text_openbay_order_import');]]></search>
+            <add position="after"><![CDATA[
+        #miwoshop-start
+        $base = MiwoShop::get('base');
+        $installed_version = (string)$base->getMiwoshopVersion();
+        $latest_version = (string)$base->getLatestMiwoshopVersion();
+        $version_status = version_compare($installed_version, $latest_version);
+        $data['version'] = $installed_version;
+
+        if ($version_status == 0) {
+            $data['text_version_info'] = MText::_('COM_MIWOSHOP_CPANEL_LATEST_VERSION_INSTALLED');
+            $data['version_class'] = "";
+        }
+        elseif($version_status == -1) {
+            $data['text_version_info'] = MText::_('COM_MIWOSHOP_CPANEL_OLD_VERSION');
+            $data['version_class'] = "version-old";
+        }
+        else {
+            $data['text_version_info'] = MText::_('COM_MIWOSHOP_CPANEL_NEWER_VERSION');
+            $data['version_class'] = "version-not-released";
+        }
+        #miwoshop-end
+            ]]></add>
+        </operation>
+    </file>
+
+    <file path="admin/view/template/catalog/product_form.tpl">
+   		<operation error="log">
+   			<search><![CDATA[<form action="<?php echo $action; ?>" method="post" enctype="multipart/form-data" id="form-product" class="form-horizontal">]]></search>
+   			<add position="after"><![CDATA[		<script language="text/javascript">
+   			function submitbutton(pressbutton) {
+   				<?php foreach ($languages as $language) { ?>
+   					<?php echo MiwoShop::get('base')->editor()->save("product_description[".$language['language_id']."][description]"); ?>
+   				<?php } ?>
+   				submitform(pressbutton);
+   			}
+   		</script>
+   		]]></add>
+   		</operation>
+   		<operation error="log">
+   			<search miwomod="true"><![CDATA[<textarea name="product_description[<?php echo $language['language_id']; ?>][description]" placeholder="<?php echo $entry_description; ?>" id="input-description<?php echo $language['language_id']; ?>"><?php echo isset($product_description[$language['language_id']]) ? $product_description[$language['language_id']]['description'] : ''; ?></textarea>]]></search>
+   			<add position="replace"><![CDATA[
+                        <?php
+                          $desc = isset($product_description[$language['language_id']]) ? $product_description[$language['language_id']]['description'] : '';
+                          echo MiwoShop::get('base')->editor()->display("product_description[".$language['language_id']."][description]", $desc, '97% !important', '320', '50', '11');
+                        ?>]]></add>
+   		</operation>
+    </file>
+
+    <file path="admin/view/template/catalog/category_form.tpl">
+   		<operation error="log">
+   			<search><![CDATA[<form action="<?php echo $action; ?>" method="post" enctype="multipart/form-data" id="form-category" class="form-horizontal">]]></search>
+   			<add position="after"><![CDATA[          <script language="text/javascript">
+            function submitbutton(pressbutton) {
+                <?php foreach ($languages as $language) { ?>
+                    <?php echo MiwoShop::get('base')->editor()->save("category_description[".$language['language_id']."][description]"); ?>
+                <?php } ?>
+                submitform(pressbutton);
+            }
+          </script>
+   		]]></add>
+   		</operation>
+   		<operation error="log">
+   			<search miwomod="true"><![CDATA[<textarea name="category_description[<?php echo $language['language_id']; ?>][description]" placeholder="<?php echo $entry_description; ?>" id="input-description<?php echo $language['language_id']; ?>" class="form-control"><?php echo isset($category_description[$language['language_id']]) ? $category_description[$language['language_id']]['description'] : ''; ?></textarea>]]></search>
+   			<add position="replace"><![CDATA[
+                        <?php
+                        $desc = isset($category_description[$language['language_id']]) ? $category_description[$language['language_id']]['description'] : '';
+                        echo MiwoShop::get('base')->editor()->display("category_description[".$language['language_id']."][description]", $desc, '97% !important', '320', '50', '11');
+                        ?>]]></add>
+   		</operation>
+    </file>
+
+    <file path="admin/view/template/catalog/information_form.tpl">
+   		<operation error="log">
+   			<search><![CDATA[<form action="<?php echo $action; ?>" method="post" enctype="multipart/form-data" id="form-information" class="form-horizontal">]]></search>
+   			<add position="after"><![CDATA[          <script language="text/javascript">
+            function submitbutton(pressbutton) {
+                <?php foreach ($languages as $language) { ?>
+                    <?php echo MiwoShop::get('base')->editor()->save("information_description[".$language['language_id']."][description]"); ?>
+                <?php } ?>
+                submitform(pressbutton);
+            }
+          </script>
+   		]]></add>
+   		</operation>
+   		<operation error="log">
+   			<search miwomod="true"><![CDATA[<textarea name="information_description[<?php echo $language['language_id']; ?>][description]" placeholder="<?php echo $entry_description; ?>" id="input-description<?php echo $language['language_id']; ?>" class="form-control"><?php echo isset($information_description[$language['language_id']]) ? $information_description[$language['language_id']]['description'] : ''; ?></textarea>]]></search>
+   			<add position="replace"><![CDATA[
+                        <?php
+                          $desc = isset($information_description[$language['language_id']]) ? $information_description[$language['language_id']]['description'] : '';
+                          echo MiwoShop::get('base')->editor()->display("information_description[".$language['language_id']."][description]", $desc, '97% !important', '320', '50', '11');
+                        ?>]]></add>
+   		</operation>
+    </file>
+
+    <file path="admin/view/template/marketing/contact.tpl">
+        <operation error="log">
+            <search><![CDATA[function send(url) {]]></search>
+            <add position="after"><![CDATA[    <?php echo MiwoShop::get('base')->editor()->save("message"); ?>]]></add>
+        </operation>
+        
+		<operation error="log">
+            <search><![CDATA[<textarea name="message" placeholder="<?php echo $entry_message; ?>" id="input-message" class="form-control"></textarea>]]></search>
+            <add position="replace"><![CDATA[<?php echo MiwoShop::get('base')->editor()->display("message", "", '97% !important', '320', '50', '11'); ?>]]></add>
+        </operation>
+    </file>
+
+    <file path="admin/view/template/common/menu.tpl">
+        <operation error="log">
+            <search><![CDATA[<li><a href="<?php echo $language; ?>"><?php echo $text_language; ?></a></li>]]></search>
+            <add position="replace"><![CDATA[]]></add>
+        </operation>
+    </file>
+
+    <file path="admin/controller/setting/setting.php">
+        <operation error="skip">
+            <search><![CDATA[$data['entry_product_limit'] = $this->language->get('entry_product_limit');]]></search>
+            <add position="before"><![CDATA[		$data['entry_category_name_limit'] = $this->language->get('entry_category_name_limit'); #miwoshop-start]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[$data['help_product_limit'] = $this->language->get('help_product_limit');]]></search>
+            <add position="before"><![CDATA[		$data['help_category_name_limit'] = $this->language->get('help_category_name_limit'); #miwoshop-start]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[if (isset($this->request->post['config_product_limit']))]]></search>
+            <add position="before"><![CDATA[
+        #miwoshop-start
+		if (isset($this->request->post['config_category_name_limit'])) {
+			$data['config_category_name_limit'] = $this->request->post['config_category_name_limit'];
+		} elseif ($this->config->get('config_category_name_limit')) {
+			$data['config_category_name_limit'] = $this->config->get('config_category_name_limit');
+		} else {
+		    $data['config_category_name_limit'] = 20;
+		}
+		#miwoshop-end
+		]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[$server = HTTPS_CATALOG;]]></search>
+            <add position="replace"><![CDATA[$server = HTTPS_CATALOG.MID_PATH.'/miwoshop/site/opencart/'; #miwoshop-start]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[$server = HTTP_CATALOG;]]></search>
+            <add position="replace"><![CDATA[$server = HTTP_CATALOG.MID_PATH.'/miwoshop/site/opencart/'; #miwoshop-start]]></add>
+        </operation>
+        <operation error="skip" info="Miwoshop Settings">
+            <search><![CDATA[$data['tab_server'] = $this->language->get('tab_server');]]></search>
+            <add position="after"><![CDATA[
+        #miwoshop-start
+        $data['entry_miwoshop_pid'] = $this->language->get('entry_miwoshop_pid');
+        $data['entry_miwoshop_enable_vqmod_cache'] = $this->language->get('entry_miwoshop_enable_vqmod_cache');
+        $data['entry_miwoshop_show_header'] = $this->language->get('entry_miwoshop_show_header');
+        $data['entry_miwoshop_show_footer'] = $this->language->get('entry_miwoshop_show_footer');
+        $data['entry_miwoshop_show_cats_menu'] = $this->language->get('entry_miwoshop_show_cats_menu');
+        $data['entry_miwoshop_trigger_content_plg'] = $this->language->get('entry_miwoshop_trigger_content_plg');
+        $data['entry_miwoshop_fix_ie_cache'] = $this->language->get('entry_miwoshop_fix_ie_cache');
+        $data['entry_miwoshop_miwoshop_display'] = $this->language->get('entry_miwoshop_miwoshop_display');
+        $data['entry_miwoshop_button_class'] = $this->language->get('entry_miwoshop_button_class');
+        $data['entry_miwoshop_comments'] = $this->language->get('entry_miwoshop_comments');
+        $data['entry_miwoshop_currency'] = $this->language->get('entry_miwoshop_currency');
+        $data['entry_miwoshop_contact'] = $this->language->get('entry_miwoshop_contact');
+        $data['entry_miwoshop_miwosef_integration'] = $this->language->get('entry_miwoshop_miwosef_integration');
+        $data['entry_miwoshop_set_input_width'] = $this->language->get('entry_miwoshop_set_input_width');
+        $data['entry_miwoshop_acymailling_register'] = $this->language->get('entry_miwoshop_acymailling_register');
+        $data['entry_miwoshop_acymailling_checkout'] = $this->language->get('entry_miwoshop_acymailling_checkout');
+        $data['entry_miwoshop_check_j_block_status'] = $this->language->get('entry_miwoshop_check_j_block_status');
+        $data['entry_miwoshop_firewall_lfi'] = $this->language->get('entry_miwoshop_firewall_lfi');
+        $data['entry_miwoshop_firewall_rfi'] = $this->language->get('entry_miwoshop_firewall_rfi');
+        $data['entry_miwoshop_firewall_sql'] = $this->language->get('entry_miwoshop_firewall_sql');
+        $data['entry_miwoshop_firewall_xss'] = $this->language->get('entry_miwoshop_firewall_xss');
+
+        if (isset($this->request->post['config_miwoshop'])) {
+            $data['config_miwoshop'] = $this->request->post['config_miwoshop'];
+        } else {
+            $data['config_miwoshop'] = $this->config->get('config_miwoshop');
+        }
+        #miwoshop-end
+            ]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[if (isset($this->error['encryption'])) {]]></search>
+            <add position="before"><![CDATA[
+        #miwoshop-start
+        if (!isset($data['config_miwoshop']) or !isset($data['config_miwoshop']['enable_vqmod_cache'])) {
+            $data['config_miwoshop']['enable_vqmod_cache'] = 1;
+        }
+
+        if (!isset($data['config_miwoshop']) or !isset($data['config_miwoshop']['show_header'])) {
+            $data['config_miwoshop']['show_header'] = 1;
+        }
+
+        if (!isset($data['config_miwoshop']) or !isset($data['config_miwoshop']['show_footer'])) {
+            $data['config_miwoshop']['show_footer'] = 1;
+        }
+
+        if (!isset($data['config_miwoshop']) or !isset($data['config_miwoshop']['show_cats_menu'])) {
+            $data['config_miwoshop']['show_cats_menu'] = 0;
+        }
+
+        if (!isset($data['config_miwoshop']) or !isset($data['config_miwoshop']['trigger_content_plg'])) {
+            $data['config_miwoshop']['trigger_content_plg'] = 1;
+        }
+
+        if (!isset($data['config_miwoshop']) or !isset($data['config_miwoshop']['fix_ie_cache'])) {
+            $data['config_miwoshop']['fix_ie_cache'] = 0;
+        }
+
+        if (!isset($data['config_miwoshop']) or !isset($data['config_miwoshop']['check_j_block_status'])) {
+            $data['config_miwoshop']['check_j_block_status'] = 1;
+        }
+
+        if (!isset($data['config_miwoshop']) or !isset($data['config_miwoshop']['miwoshop_display'])) {
+            $data['config_miwoshop']['miwoshop_display'] = 0;
+        }
+
+        if (!isset($data['config_miwoshop']) or !isset($data['config_miwoshop']['button_class'])) {
+            $data['config_miwoshop']['button_class'] = '';
+        }
+
+        if (!isset($data['config_miwoshop']) or !isset($data['config_miwoshop']['comments'])) {
+            $data['config_miwoshop']['comments'] = 0;
+        }
+		
+		if (!isset($data['config_miwoshop']) or !isset($data['config_miwoshop']['currency'])) {
+            $data['config_miwoshop']['currency'] = 1;
+        }
+		
+		if (!isset($data['config_miwoshop']) or !isset($data['config_miwoshop']['show_contact'])) {
+            $data['config_miwoshop']['show_contact'] = 0;
+        }
+
+        if (!isset($data['config_miwoshop']) or !isset($data['config_miwoshop']['miwosef_integration'])) {
+            $data['config_miwoshop']['miwosef_integration'] = 0;
+        }
+        #miwoshop-end
+            ]]></add>
+        </operation>
+    </file>
+
+    <file path="admin/controller/dashboard/sale.php">
+        <operation error="skip">
+            <search><![CDATA[$data['sale'] = $this->url->link('sale/order', 'token=' . $this->session->data['token'], 'SSL');]]></search>
+            <add position="before"><![CDATA[		$data['total'] = $this->currency->format($sale_total, $this->config->get('config_currency')); #miwoshop-start
+			]]></add>
+        </operation>
+    </file>
+	
+    <file path="admin/controller/common/filemanager.php">
+        <operation error="skip">
+            <search><![CDATA['name'  => implode(' ', $name),]]></search>
+            <add position="replace"><![CDATA['name'  => implode('', $name),]]></add>
+        </operation>
+    </file>
+	
+    <file path="admin/language/*/setting/setting.php">
+        <operation error="skip" info="Miwoshop Settings">
+            <search><![CDATA[$_['heading_title']                    = 'Settings';]]></search>
+            <add  position="after"><![CDATA[
+#miwoshop-start
+$_['entry_miwoshop_pid']                    = 'Personal ID';
+$_['entry_miwoshop_enable_vqmod_cache']     = 'Enable Modifications Cache';
+$_['entry_miwoshop_show_header']            = 'Show header widgets';
+$_['entry_miwoshop_show_footer']            = 'Show footer links';
+$_['entry_miwoshop_show_cats_menu']         = 'Show categories menu';
+$_['entry_miwoshop_trigger_content_plg']    = 'Load Plugins';
+$_['entry_miwoshop_fix_ie_cache']           = 'Fix IE caching issues';
+$_['entry_miwoshop_miwoshop_display']       = 'Default Product Display';
+$_['entry_miwoshop_button_class']           = 'Button CSS class';
+$_['entry_miwoshop_comments']               = 'Enable comments';
+$_['entry_miwoshop_currency']               = 'Show Currency';
+$_['entry_miwoshop_contact']               	= 'Show Contact';
+$_['entry_miwoshop_check_j_block_status']   = 'Check Joomla activation status';
+$_['entry_miwoshop_miwosef_integration']    = 'Enable MiwoSEF integration';
+$_['entry_miwoshop_set_input_width']   		= 'Set input width (120px)';
+$_['entry_miwoshop_acymailling_register']   = 'Add to AcyMailing list after registration';
+$_['entry_miwoshop_acymailling_checkout']   = 'Add to AcyMailing list after checkout';
+$_['entry_miwoshop_firewall_lfi']           = 'LFI Protection';
+$_['entry_miwoshop_firewall_rfi']           = 'RFI Protection';
+$_['entry_miwoshop_firewall_sql']           = 'SQLi Protection';
+$_['entry_miwoshop_firewall_xss']           = 'XSS Protection';
+$_['error_language_no_in_db']               = 'Language wasn`t found in MiwoShop database';
+$_['error_language_wrong_language_code']    = ' : Wrong language code';
+$_['error_language_no_directory']           = ' : Language wasn`t found in MiwoShop Library or Joomla';
+$_['success_language_updated']              = ' : Language was updated';
+$_['entry_category_name_limit']             = 'Refine Search character';
+$_['help_category_name_limit']              = 'Refine Search\'s category name character';
+#miwoshop-end
+            ]]></add>
+        </operation>
+    </file>
+
+    <file path="admin/view/template/setting/setting.tpl">
+        <operation error="skip">
+            <search><![CDATA[<label class="col-sm-2 control-label" for="input-catalog-limit">]]></search>
+            <add position="before" offset="1"><![CDATA[                <div class="form-group">
+                  <label class="col-sm-2 control-label" for="input-category-name-limit"><span data-toggle="tooltip" title="<?php echo $help_category_name_limit; ?>"><?php echo $entry_category_name_limit; ?></span></label>
+                  <div class="col-sm-10">
+                    <input type="text" name="config_category_name_limit" value="<?php echo $config_category_name_limit; ?>" placeholder="<?php echo $entry_category_name_limit; ?>" id="input-category-name-limit" class="form-control" />
+                  </div>
+                </div>]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[<input type="text" name="config_mail[smtp_password]"]]></search>
+            <add position="replace"><![CDATA[<input type="password" name="config_mail[smtp_password]"]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[<textarea name="config_google_analytics" rows="5" placeholder="<?php echo $entry_google_analytics; ?>" id="input-google-analytics" class="form-control"><?php echo $config_google_analytics; ?></textarea>]]></search>
+            <add position="after" offset="3"><![CDATA[
+                <!-- added MiwoShop setting-->
+                <div class="tab-pane" id="tab-miwoshop">
+                    <fieldset>
+	                    <legend>General</legend>
+						<div class="form-group">
+						  <label class="col-sm-2 control-label" for="config_miwoshop_pid"><?php echo $entry_miwoshop_pid; ?></label>
+						  <div class="col-sm-10">
+							<input type="password" name="config_miwoshop[pid]" id="config_miwoshop_pid" value="<?php echo $config_miwoshop['pid'] ?>" class="form-control" />
+						  </div>
+						</div>
+						<div class="form-group">
+						  <label class="col-sm-2 control-label"><?php echo $entry_miwoshop_enable_vqmod_cache; ?></label>
+						  <div class="col-sm-10">
+							<label class="radio-inline">
+							  <?php if ($config_miwoshop['enable_vqmod_cache']) { ?>
+							  <input type="radio" name="config_miwoshop[enable_vqmod_cache]" value="1" checked="checked" />
+							  <?php echo $text_yes; ?>
+							  <?php } else { ?>
+							  <input type="radio" name="config_miwoshop[enable_vqmod_cache]" value="1" />
+							  <?php echo $text_yes; ?>
+							  <?php } ?>
+							</label>
+							<label class="radio-inline">
+							  <?php if (!$config_miwoshop['enable_vqmod_cache']) { ?>
+							  <input type="radio" name="config_miwoshop[enable_vqmod_cache]" value="0" checked="checked" />
+							  <?php echo $text_no; ?>
+							  <?php } else { ?>
+							  <input type="radio" name="config_miwoshop[enable_vqmod_cache]" value="0" />
+							  <?php echo $text_no; ?>
+							  <?php } ?>
+							</label>
+							</div>
+						</div>
+						<div class="form-group">
+						  <label class="col-sm-2 control-label"><?php echo $entry_miwoshop_fix_ie_cache; ?></label>
+						  <div class="col-sm-10">
+							<label class="radio-inline">
+							  <?php if ($config_miwoshop['fix_ie_cache']) { ?>
+							  <input type="radio" name="config_miwoshop[fix_ie_cache]" value="1" checked="checked" />
+							  <?php echo $text_yes; ?>
+							  <?php } else { ?>
+							  <input type="radio" name="config_miwoshop[fix_ie_cache]" value="1" />
+							  <?php echo $text_yes; ?>
+							  <?php } ?>
+							</label>
+							<label class="radio-inline">
+							  <?php if (!$config_miwoshop['fix_ie_cache']) { ?>
+							  <input type="radio" name="config_miwoshop[fix_ie_cache]" value="0" checked="checked" />
+							  <?php echo $text_no; ?>
+							  <?php } else { ?>
+							  <input type="radio" name="config_miwoshop[fix_ie_cache]" value="0" />
+							  <?php echo $text_no; ?>
+							  <?php } ?>
+							</label>
+							</div>
+						</div>
+	                </fieldset>
+                    <fieldset>
+	                    <legend>Layout</legend>
+						<div class="form-group">
+						  <label class="col-sm-2 control-label"><?php echo $entry_miwoshop_show_header; ?></label>
+						  <div class="col-sm-10">
+							<label class="radio-inline">
+							  <?php if ($config_miwoshop['show_header']) { ?>
+							  <input type="radio" name="config_miwoshop[show_header]" value="1" checked="checked" />
+							  <?php echo $text_yes; ?>
+							  <?php } else { ?>
+							  <input type="radio" name="config_miwoshop[show_header]" value="1" />
+							  <?php echo $text_yes; ?>
+							  <?php } ?>
+							</label>
+							<label class="radio-inline">
+							  <?php if (!$config_miwoshop['show_header']) { ?>
+							  <input type="radio" name="config_miwoshop[show_header]" value="0" checked="checked" />
+							  <?php echo $text_no; ?>
+							  <?php } else { ?>
+							  <input type="radio" name="config_miwoshop[show_header]" value="0" />
+							  <?php echo $text_no; ?>
+							  <?php } ?>
+							</label>
+							</div>
+						</div>
+						<div class="form-group">
+						  <label class="col-sm-2 control-label"><?php echo $entry_miwoshop_show_footer; ?></label>
+						  <div class="col-sm-10">
+							<label class="radio-inline">
+							  <?php if ($config_miwoshop['show_footer']) { ?>
+							  <input type="radio" name="config_miwoshop[show_footer]" value="1" checked="checked" />
+							  <?php echo $text_yes; ?>
+							  <?php } else { ?>
+							  <input type="radio" name="config_miwoshop[show_footer]" value="1" />
+							  <?php echo $text_yes; ?>
+							  <?php } ?>
+							</label>
+							<label class="radio-inline">
+							  <?php if (!$config_miwoshop['show_footer']) { ?>
+							  <input type="radio" name="config_miwoshop[show_footer]" value="0" checked="checked" />
+							  <?php echo $text_no; ?>
+							  <?php } else { ?>
+							  <input type="radio" name="config_miwoshop[show_footer]" value="0" />
+							  <?php echo $text_no; ?>
+							  <?php } ?>
+							</label>
+							</div>
+						</div>
+						<div class="form-group">
+						  <label class="col-sm-2 control-label"><?php echo $entry_miwoshop_show_cats_menu; ?></label>
+						  <div class="col-sm-10">
+							<label class="radio-inline">
+							  <?php if ($config_miwoshop['show_cats_menu']) { ?>
+							  <input type="radio" name="config_miwoshop[show_cats_menu]" value="1" checked="checked" />
+							  <?php echo $text_yes; ?>
+							  <?php } else { ?>
+							  <input type="radio" name="config_miwoshop[show_cats_menu]" value="1" />
+							  <?php echo $text_yes; ?>
+							  <?php } ?>
+							</label>
+							<label class="radio-inline">
+							  <?php if (!$config_miwoshop['show_cats_menu']) { ?>
+							  <input type="radio" name="config_miwoshop[show_cats_menu]" value="0" checked="checked" />
+							  <?php echo $text_no; ?>
+							  <?php } else { ?>
+							  <input type="radio" name="config_miwoshop[show_cats_menu]" value="0" />
+							  <?php echo $text_no; ?>
+							  <?php } ?>
+							</label>
+							</div>
+						</div>
+						<div class="form-group">
+						  <label class="col-sm-2 control-label"><?php echo $entry_miwoshop_miwoshop_display; ?></label>
+						  <div class="col-sm-10">
+							<label class="radio-inline">
+							  <?php if ($config_miwoshop['miwoshop_display']) { ?>
+							  <input type="radio" name="config_miwoshop[miwoshop_display]" value="1" checked="checked" />
+							  Grid
+							  <?php } else { ?>
+							  <input type="radio" name="config_miwoshop[miwoshop_display]" value="1" />
+							  Grid
+							  <?php } ?>
+							</label>
+							<label class="radio-inline">
+							  <?php if (!$config_miwoshop['miwoshop_display']) { ?>
+							  <input type="radio" name="config_miwoshop[miwoshop_display]" value="0" checked="checked" />
+							  List
+							  <?php } else { ?>
+							  <input type="radio" name="config_miwoshop[miwoshop_display]" value="0" />
+							  List
+							  <?php } ?>
+							</label>
+							</div>
+						</div>
+						<div class="form-group">
+						  <label class="col-sm-2 control-label"><?php echo $entry_miwoshop_currency; ?></label>
+						  <div class="col-sm-10">
+							<label class="radio-inline">
+							  <?php if ($config_miwoshop['currency']) { ?>
+							  <input type="radio" name="config_miwoshop[currency]" value="1" checked="checked" />
+							  <?php echo $text_yes; ?>
+							  <?php } else { ?>
+							  <input type="radio" name="config_miwoshop[currency]" value="1" />
+							  <?php echo $text_yes; ?>
+							  <?php } ?>
+							</label>
+							<label class="radio-inline">
+							  <?php if (!$config_miwoshop['currency']) { ?>
+							  <input type="radio" name="config_miwoshop[currency]" value="0" checked="checked" />
+							  <?php echo $text_no; ?>
+							  <?php } else { ?>
+							  <input type="radio" name="config_miwoshop[currency]" value="0" />
+							  <?php echo $text_no; ?>
+							  <?php } ?>
+							</label>
+						  </div>
+						</div>
+						<div class="form-group">
+						  <label class="col-sm-2 control-label"><?php echo $entry_miwoshop_contact; ?></label>
+						  <div class="col-sm-10">
+							<label class="radio-inline">
+							  <?php if ($config_miwoshop['show_contact']) { ?>
+							  <input type="radio" name="config_miwoshop[show_contact]" value="1" checked="checked" />
+							  <?php echo $text_yes; ?>
+							  <?php } else { ?>
+							  <input type="radio" name="config_miwoshop[show_contact]" value="1" />
+							  <?php echo $text_yes; ?>
+							  <?php } ?>
+							</label>
+							<label class="radio-inline">
+							  <?php if (!$config_miwoshop['show_contact']) { ?>
+							  <input type="radio" name="config_miwoshop[show_contact]" value="0" checked="checked" />
+							  <?php echo $text_no; ?>
+							  <?php } else { ?>
+							  <input type="radio" name="config_miwoshop[show_contact]" value="0" />
+							  <?php echo $text_no; ?>
+							  <?php } ?>
+							</label>
+						  </div>
+						</div>
+						<div class="form-group">
+						  <label class="col-sm-2 control-label"><?php echo $entry_miwoshop_button_class; ?></label>
+						  <div class="col-sm-10">
+							<input type="text" name="config_miwoshop[button_class]" value="<?php echo $config_miwoshop['button_class']; ?>" class="form-control" />
+						  </div>
+						</div>
+	                </fieldset>
+                    <fieldset>
+	                    <legend>Firewall</legend>
+						<div class="form-group">
+						  <label class="col-sm-2 control-label"><?php echo $entry_miwoshop_firewall_lfi; ?></label>
+						  <div class="col-sm-10">
+							<select name="config_miwoshop[firewall_lfi]" class="form-control">
+							  <?php if (!isset($config_miwoshop['firewall_lfi']) or $config_miwoshop['firewall_lfi'] == 'none') { ?>
+							  <option value="none" selected="selected">None</option>
+							  <?php } else { ?>
+							  <option value="none">None</option>
+							  <?php } ?>
+							  <?php if ($config_miwoshop['firewall_lfi'] == 'get') { ?>
+							  <option value="get" selected="selected">GET (URL data)</option>
+							  <?php } else { ?>
+							  <option value="get">GET (URL data)</option>
+							  <?php } ?>
+							  <?php if ($config_miwoshop['firewall_lfi'] == 'post') { ?>
+							  <option value="post" selected="selected">POST (Form data)</option>
+							  <?php } else { ?>
+							  <option value="post">POST (Form data)</option>
+							  <?php } ?>
+							  <?php if ($config_miwoshop['firewall_lfi'] == 'both') { ?>
+							  <option value="both" selected="selected">Both</option>
+							  <?php } else { ?>
+							  <option value="both">Both</option>
+							  <?php } ?>
+							  </select>
+						  </div>
+						</div>
+						<div class="form-group">
+						  <label class="col-sm-2 control-label"><?php echo $entry_miwoshop_firewall_rfi; ?></label>
+						  <div class="col-sm-10">
+							<select name="config_miwoshop[firewall_rfi]" class="form-control">
+							  <?php if (!isset($config_miwoshop['firewall_rfi']) or $config_miwoshop['firewall_rfi'] == 'none') { ?>
+							  <option value="none" selected="selected">None</option>
+							  <?php } else { ?>
+							  <option value="none">None</option>
+							  <?php } ?>
+							  <?php if ($config_miwoshop['firewall_rfi'] == 'get') { ?>
+							  <option value="get" selected="selected">GET (URL data)</option>
+							  <?php } else { ?>
+							  <option value="get">GET (URL data)</option>
+							  <?php } ?>
+							  <?php if ($config_miwoshop['firewall_rfi'] == 'post') { ?>
+							  <option value="post" selected="selected">POST (Form data)</option>
+							  <?php } else { ?>
+							  <option value="post">POST (Form data)</option>
+							  <?php } ?>
+							  <?php if ($config_miwoshop['firewall_rfi'] == 'both') { ?>
+							  <option value="both" selected="selected">Both</option>
+							  <?php } else { ?>
+							  <option value="both">Both</option>
+							  <?php } ?>
+							  </select>
+						  </div>
+						</div>
+						<div class="form-group">
+						  <label class="col-sm-2 control-label"><?php echo $entry_miwoshop_firewall_sql; ?></label>
+						  <div class="col-sm-10">
+							<select name="config_miwoshop[firewall_sql]" class="form-control">
+							  <?php if (!isset($config_miwoshop['firewall_sql']) or $config_miwoshop['firewall_sql'] == 'none') { ?>
+							  <option value="none" selected="selected">None</option>
+							  <?php } else { ?>
+							  <option value="none">None</option>
+							  <?php } ?>
+							  <?php if ($config_miwoshop['firewall_sql'] == 'get') { ?>
+							  <option value="get" selected="selected">GET (URL data)</option>
+							  <?php } else { ?>
+							  <option value="get">GET (URL data)</option>
+							  <?php } ?>
+							  <?php if ($config_miwoshop['firewall_sql'] == 'post') { ?>
+							  <option value="post" selected="selected">POST (Form data)</option>
+							  <?php } else { ?>
+							  <option value="post">POST (Form data)</option>
+							  <?php } ?>
+							  <?php if ($config_miwoshop['firewall_sql'] == 'both') { ?>
+							  <option value="both" selected="selected">Both</option>
+							  <?php } else { ?>
+							  <option value="both">Both</option>
+							  <?php } ?>
+							  </select>
+						  </div>
+						</div>
+						<div class="form-group">
+						  <label class="col-sm-2 control-label"><?php echo $entry_miwoshop_firewall_xss; ?></label>
+						  <div class="col-sm-10">
+							<select name="config_miwoshop[firewall_xss]" class="form-control">
+							  <?php if (!isset($config_miwoshop['firewall_xss']) or $config_miwoshop['firewall_xss'] == 'none') { ?>
+							  <option value="none" selected="selected">None</option>
+							  <?php } else { ?>
+							  <option value="none">None</option>
+							  <?php } ?>
+							  <?php if ($config_miwoshop['firewall_xss'] == 'get') { ?>
+							  <option value="get" selected="selected">GET (URL data)</option>
+							  <?php } else { ?>
+							  <option value="get">GET (URL data)</option>
+							  <?php } ?>
+							  <?php if ($config_miwoshop['firewall_xss'] == 'post') { ?>
+							  <option value="post" selected="selected">POST (Form data)</option>
+							  <?php } else { ?>
+							  <option value="post">POST (Form data)</option>
+							  <?php } ?>
+							  <?php if ($config_miwoshop['firewall_xss'] == 'both') { ?>
+							  <option value="both" selected="selected">Both</option>
+							  <?php } else { ?>
+							  <option value="both">Both</option>
+							  <?php } ?>
+							  </select>
+						  </div>
+						</div>
+	                </fieldset>
+                    <fieldset>
+	                    <legend>Integration</legend>
+						<div class="form-group">
+						  <label class="col-sm-2 control-label"><?php echo $entry_miwoshop_trigger_content_plg; ?></label>
+						  <div class="col-sm-10">
+							<label class="radio-inline">
+							  <?php if ($config_miwoshop['trigger_content_plg']) { ?>
+							  <input type="radio" name="config_miwoshop[trigger_content_plg]" value="1" checked="checked" />
+							  <?php echo $text_yes; ?>
+							  <?php } else { ?>
+							  <input type="radio" name="config_miwoshop[trigger_content_plg]" value="1" />
+							  <?php echo $text_yes; ?>
+							  <?php } ?>
+							</label>
+							<label class="radio-inline">
+							  <?php if (!$config_miwoshop['trigger_content_plg']) { ?>
+							  <input type="radio" name="config_miwoshop[trigger_content_plg]" value="0" checked="checked" />
+							  <?php echo $text_no; ?>
+							  <?php } else { ?>
+							  <input type="radio" name="config_miwoshop[trigger_content_plg]" value="0" />
+							  <?php echo $text_no; ?>
+							  <?php } ?>
+							</label>
+							</div>
+						</div>
+						<div class="form-group">
+						  <label class="col-sm-2 control-label"><?php echo $entry_miwoshop_check_j_block_status; ?></label>
+						  <div class="col-sm-10">
+							<label class="radio-inline">
+							  <?php if ($config_miwoshop['check_j_block_status']) { ?>
+							  <input type="radio" name="config_miwoshop[check_j_block_status]" value="1" checked="checked" />
+							  <?php echo $text_yes; ?>
+							  <?php } else { ?>
+							  <input type="radio" name="config_miwoshop[check_j_block_status]" value="1" />
+							  <?php echo $text_yes; ?>
+							  <?php } ?>
+							</label>
+							<label class="radio-inline">
+							  <?php if (!$config_miwoshop['check_j_block_status']) { ?>
+							  <input type="radio" name="config_miwoshop[check_j_block_status]" value="0" checked="checked" />
+							  <?php echo $text_no; ?>
+							  <?php } else { ?>
+							  <input type="radio" name="config_miwoshop[check_j_block_status]" value="0" />
+							  <?php echo $text_no; ?>
+							  <?php } ?>
+							</label>
+							</div>
+						</div>
+						<div class="form-group">
+						  <label class="col-sm-2 control-label"><?php echo $entry_miwoshop_comments; ?></label>
+						  <div class="col-sm-10">
+							<select name="config_miwoshop[comments]" class="form-control">
+							  <?php if (!isset($config_miwoshop['comments']) or $config_miwoshop['comments'] == 0) { ?>
+							  <option value="0" selected="selected"><?php echo $text_no; ?></option>
+							  <?php } else { ?>
+							  <option value="0"><?php echo $text_no; ?></option>
+							  <?php } ?>
+							  <?php if ($config_miwoshop['comments'] == 'jcomments') { ?>
+							  <option value="jcomments" selected="selected">JComments</option>
+							  <?php } else { ?>
+							  <option value="jcomments">JComments</option>
+							  <?php } ?>
+							  <?php if ($config_miwoshop['comments'] == 'komento') { ?>
+							  <option value="komento" selected="selected">Komento</option>
+							  <?php } else { ?>
+							  <option value="komento">Komento</option>
+							  <?php } ?>
+							  </select>
+						  </div>
+						</div>
+						<div class="form-group">
+						  <label class="col-sm-2 control-label"><?php echo $entry_miwoshop_miwosef_integration; ?></label>
+						  <div class="col-sm-10">
+							<label class="radio-inline">
+							  <?php if ($config_miwoshop['miwosef_integration']) { ?>
+							  <input type="radio" name="config_miwoshop[miwosef_integration]" value="1" checked="checked" />
+							  <?php echo $text_yes; ?>
+							  <?php } else { ?>
+							  <input type="radio" name="config_miwoshop[miwosef_integration]" value="1" />
+							  <?php echo $text_yes; ?>
+							  <?php } ?>
+							</label>
+							<label class="radio-inline">
+							  <?php if (!$config_miwoshop['miwosef_integration']) { ?>
+							  <input type="radio" name="config_miwoshop[miwosef_integration]" value="0" checked="checked" />
+							  <?php echo $text_no; ?>
+							  <?php } else { ?>
+							  <input type="radio" name="config_miwoshop[miwosef_integration]" value="0" />
+							  <?php echo $text_no; ?>
+							  <?php } ?>
+							</label>
+						  </div>
+						</div>
+						<?php if (Miwoshop::get('base')->isAcymaillingInstalled()) { ?>
+						<div class="form-group">
+						  <label class="col-sm-2 control-label"><?php echo $entry_miwoshop_acymailling_register; ?></label>
+						  <div class="col-sm-10">
+							<?php echo Miwoshop::get('base')->getMailListHtml('config_miwoshop[acymailling_register]', $config_miwoshop['acymailling_register']); ?>
+						  </div>
+						</div>
+						<div class="form-group">
+						  <label class="col-sm-2 control-label"><?php echo $entry_miwoshop_acymailling_checkout; ?></label>
+						  <div class="col-sm-10">
+							<?php echo Miwoshop::get('base')->getMailListHtml('config_miwoshop[acymailling_checkout]', $config_miwoshop['acymailling_checkout']); ?>
+						  </div>
+						</div>
+						<?php } ?>
+	                </fieldset>
+                    <input type="hidden" name="config_miwoshop[account_sync_done]" value="1">
+                    <input type="hidden" name="config_miwoshop[alias_sync_done]" value="<?php echo Miwoshop::get('base')->getConfig()->get('account_sync_done', 0); ?>">
+                    <input type="hidden" name="config_miwoshop[wizard]" value="1" />
+                </div>
+            ]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[<li><a href="#tab-server" data-toggle="tab"><?php echo $tab_server; ?></a></li>]]></search>
+            <add position="after"><![CDATA[<li><a href="#tab-miwoshop" data-toggle="tab">MiwoShop</a></li>]]></add>
+        </operation>
+    </file>
+		
+	<file path="admin/controller/catalog/information.php">
+        <operation error="skip">
+            <search><![CDATA[$data['keyword'] = $information_info['keyword'];]]></search>
+            <add position="replace"><![CDATA[$data['keyword'] = MiwoShop::get('db')->getRecordAliases($this->request->get['information_id'], 'information'); #miwoshop-start]]></add>
+        </operation>
+    </file>
+	
+    <file path="admin/controller/sale/customer.php">
+        <operation error="skip">
+            <search><![CDATA[index.php?route=]]></search>
+            <add position="replace"><![CDATA[index.php?option=com_miwoshop&route=]]></add>
+        </operation>
+    </file>
+
+    <file path="admin/controller/sale/customer_group.php">
+        <operation error="skip">
+            <search><![CDATA[$this->response->setOutput($this->load->view('sale/customer_group_form.tpl', $data));]]></search>
+            <add position="before"><![CDATA[		#miwoshop-start
+		$mgroup_tree =  MiwoShop::get('user')->getJoomlaUserGroups();
+		$mgroup_id = MiwoShop::get('user')->getJGroupIdOfCGroup($this->request->get['customer_group_id']);
+		$data['jgroups'] = MHtml::_('select.genericlist', $mgroup_tree, 'mgroup_id', 'size="1"', 'value', 'text', $mgroup_id);
+		#miwoshop-finish]]></add>
+        </operation>
+    </file>
+	
+	<file path="admin/controller/sale/order.php">    
+		<operation error="skip">
+            <search><![CDATA[$upload_info = $this->model_tool_upload->getUploadByCode($order_info['custom_field'][$custom_field['custom_field_id']]);]]></search>
+            <add position="before"><![CDATA[$this->load->model('tool/upload');]]></add>
+        </operation>
+		
+		<operation error="skip">
+            <search><![CDATA[$data['payment_action'] = $this->load->controller('payment/' . $order_info['payment_code'] . '/orderAction', '');]]></search>
+            <add position="after"><![CDATA[			$data['openbay'] = $this->user->hasPermission('access','extension/openbay');]]></add>
+        </operation>
+    </file>
+
+    <file path="admin/controller/user/user_permission.php">
+        <operation error="skip">
+            <search><![CDATA[$this->response->setOutput($this->load->view('user/user_group_form.tpl', $data));]]></search>
+            <add position="before"><![CDATA[		#miwoshop-start
+		$mgroup_tree =  MiwoShop::get('user')->getJoomlaUserGroups();
+		$mgroup_id = MiwoShop::get('user')->getJGroupIdOfUGroup($this->request->get['user_group_id']);
+		$data['jgroups'] = MHtml::_('select.genericlist', $mgroup_tree, 'mgroup_id', 'size="1"', 'value', 'text', $mgroup_id);
+		#miwoshop-finish]]></add>
+        </operation>
+    </file>
+
+	<file path="admin/controller/marketing/affiliate.php">
+        <operation error="log">
+            <search><![CDATA[if (!isset($this->request->post['zone_id']) || $this->request->post['zone_id'] == '') {]]></search>
+            <add position="replace"><![CDATA[if (!isset($this->request->post['zone_id']) || $this->request->post['zone_id'] == '' || !is_numeric($this->request->post['zone_id'])) { #miwoshop-start]]></add>
+        </operation>
+    </file>
+	
+    <file path="admin/model/catalog/information.php">
+        <operation error="skip">
+            <search><![CDATA[if (isset($data['keyword'])) {]]></search>
+            <add position="replace" offset="2"><![CDATA[#miwoshop-start
+		MiwoShop::get('miwosef')->store($data['miwosef'], $information_id);
+		foreach ($data['keyword'] as $language_id => $value) {
+		$keyword = empty($value) ? MiwoShop::get('router')->generateAlias($data['information_description'][$language_id]['title']) : $value;
+			if ($keyword) {
+                $this->db->query("INSERT INTO " . DB_PREFIX . "url_alias SET query = 'information_id=" . (int)$information_id . "', keyword = '" . $this->db->escape($keyword) . "', language_id = '" . $language_id . "'");
+            }
+		}
+		#miwoshop-finish]]></add>
+        </operation>
+		
+        <operation error="skip">
+            <search><![CDATA[if ($data['keyword']) {]]></search>
+            <add position="replace" offset="2"><![CDATA[#miwoshop-start
+		MiwoShop::get('miwosef')->store($data['miwosef']);
+		foreach ($data['keyword'] as $language_id => $value) {
+		$keyword = empty($value) ? MiwoShop::get('router')->generateAlias($data['information_description'][$language_id]['title']) : $value;
+            if ($keyword) {
+                $this->db->query("INSERT INTO " . DB_PREFIX . "url_alias SET query = 'information_id=" . (int)$information_id . "', keyword = '" . $this->db->escape($keyword) . "', language_id = '" . $language_id . "'");
+            }
+        }
+		#miwoshop-finish]]></add>
+        </operation>
+		
+        <operation error="skip">
+            <search><![CDATA[, (SELECT keyword FROM " . DB_PREFIX . "url_alias WHERE query = 'information_id=" . (int)$information_id . "') AS keyword]]></search>
+            <add position="replace"><![CDATA[]]></add>
+        </operation>
+    </file>
+
+    <file path="admin/model/catalog/manufacturer.php">
+        <operation error="skip">
+            <search><![CDATA[if (isset($data['keyword'])) {]]></search>
+            <add  position="before"><![CDATA[		#miwoshop-start
+		MiwoShop::get('miwosef')->store($data['miwosef'], $manufacturer_id);
+		$data['keyword'] = empty($data['keyword']) ? MiwoShop::get('router')->generateAlias($data['name']) : $data['keyword'];
+		#miwoshop-finish]]></add>
+        </operation>
+       
+	   <operation error="skip">
+            <search><![CDATA[if ($data['keyword']) {]]></search>
+            <add  position="before"><![CDATA[		#miwoshop-start        
+		MiwoShop::get('miwosef')->store($data['miwosef']);
+		$data['keyword'] = empty($data['keyword']) ? MiwoShop::get('router')->generateAlias($data['name']) : $data['keyword'];
+		#miwoshop-finish]]></add>
+        </operation>
+
+        <operation error="skip">
+            <search><![CDATA[$query = $this->db->query("SELECT DISTINCT *, (SELECT keyword FROM " . DB_PREFIX . "url_alias WHERE query = 'manufacturer_id=" . (int)$manufacturer_id . "') AS keyword FROM " . DB_PREFIX . "manufacturer WHERE manufacturer_id = '" . (int)$manufacturer_id . "'");]]></search>
+            <add  position="replace"><![CDATA[$query = $this->db->query("SELECT DISTINCT *, (SELECT keyword FROM " . DB_PREFIX . "url_alias WHERE query = 'manufacturer_id=" . (int)$manufacturer_id . "' LIMIT 1) AS keyword FROM " . DB_PREFIX . "manufacturer WHERE manufacturer_id = '" . (int)$manufacturer_id . "'"); #miwoshop-start]]></add>
+        </operation>
+    </file>
+
+    <file path="admin/model/sale/customer.php">
+        <operation error="skip">
+            <search index="0"><![CDATA[if (isset($data['address'])) {]]></search>
+            <add position="before"><![CDATA[		MiwoShop::get('user')->createJUserFromO($data, $customer_id); #miwoshop-start]]></add>
+        </operation>
+        
+		<operation error="skip">
+            <search><![CDATA[$this->db->query("INSERT INTO " . DB_PREFIX . "customer SET customer_group_id = '" . (int)$data['customer_group_id'] . "', firstname = '" . $this->db->escape($data['firstname']) . "', lastname = '" . $this->db->escape($data['lastname']) . "', email = '" . $this->db->escape($data['email']) . "', telephone = '" . $this->db->escape($data['telephone']) . "', fax = '" . $this->db->escape($data['fax']) . "', custom_field = '" . $this->db->escape(isset($data['custom_field']) ? serialize($data['custom_field']) : '') . "', newsletter = '" . (int)$data['newsletter'] . "', salt = '" . $this->db->escape($salt = substr(md5(uniqid(rand(), true)), 0, 9)) . "', password = '" . $this->db->escape(sha1($salt . sha1($salt . sha1($data['password'])))) . "', status = '" . (int)$data['status'] . "', approved = '" . (int)$data['approved'] . "', safe = '" . (int)$data['safe'] . "', date_added = NOW()");]]></search>
+            <add position="replace"><![CDATA[$this->db->query("INSERT INTO " . DB_PREFIX . "customer SET customer_group_id = '" . (int)$data['customer_group_id'] . "', firstname = '" . $this->db->escape($data['firstname']) . "', lastname = '" . $this->db->escape($data['lastname']) . "', email = '" . $this->db->escape($data['email']) . "', telephone = '" . $this->db->escape($data['telephone']) . "', fax = '" . $this->db->escape($data['fax']) . "', custom_field = '" . $this->db->escape(isset($data['custom_field']) ? serialize($data['custom_field']) : '') . "', newsletter = '" . (int)$data['newsletter'] . "', password = '" . $this->db->escape(Miwoshop::get('user')->encryptPassword($data['password'])) . "', status = '" . (int)$data['status'] . "', approved = '" . (int)$data['approved'] . "', safe = '" . (int)$data['safe'] . "', date_added = NOW()"); #miwoshop-start]]></add>
+        </operation>
+        
+		<operation error="skip">
+            <search><![CDATA[$this->db->query("UPDATE " . DB_PREFIX . "customer SET salt = '" . $this->db->escape($salt = substr(md5(uniqid(rand(), true)), 0, 9)) . "', password = '" . $this->db->escape(sha1($salt . sha1($salt . sha1($data['password'])))) . "' WHERE customer_id = '" . (int)$customer_id . "'");]]></search>
+            <add position="replace"><![CDATA[$this->db->query("UPDATE " . DB_PREFIX . "customer SET password = '" . $data['password'] . "' WHERE customer_id = '" . (int)$customer_id . "'"); #miwoshop-start]]></add>
+        </operation>
+        
+		<operation error="skip">
+            <search><![CDATA[public function editCustomer($customer_id, $data) {]]></search>
+            <add position="after"><![CDATA[		$data['password'] = MiwoShop::get('user')->updateJUserFromO(MiwoShop::get('user')->getJUserIdFromOCustomer($customer_id), $data, $customer_id); #miwoshop-start]]></add>
+        </operation>
+        
+		<operation error="skip">
+            <search><![CDATA[public function deleteCustomer($customer_id) {]]></search>
+            <add position="after"><![CDATA[		MiwoShop::get('user')->deleteJUserFromO($customer_id); #miwoshop-start]]></add>
+        </operation>
+        
+		<operation error="skip">
+            <search index="0"><![CDATA[if ($customer_info) {]]></search>
+            <add position="after"><![CDATA[            MiwoShop::get('user')->approveJUserFromO($customer_id); #miwoshop-start]]></add>
+        </operation>
+        
+		<operation error="skip">
+            <search><![CDATA[$message .= $store_url . "\n\n";]]></search>
+            <add position="replace"><![CDATA[$message .= str_replace('/administrator', '', $this->url->link('account/login', '', 'SSL')) . "\n\n"; #miwoshop-start]]></add>
+        </operation>
+    </file>	
+	
+    <file path="admin/model/sale/customer_group.php">
+        <operation error="skip">
+            <search><![CDATA[$customer_group_id = $this->db->getLastId();]]></search>
+            <add position="after"><![CDATA[        $this->db->query("INSERT INTO " . DB_PREFIX . "mgroup_cgroup_map SET mgroup_id = '" . $data['mgroup_id'] . "', cgroup_id = '" . (int)$customer_group_id . "'"); #miwoshop-start]]></add>
+        </operation>
+        
+		<operation error="skip">
+            <search><![CDATA[public function editCustomerGroup($customer_group_id, $data) {]]></search>
+            <add position="after"><![CDATA[        $this->db->query("UPDATE " . DB_PREFIX . "mgroup_cgroup_map SET mgroup_id = '" . $data['mgroup_id'] . "' WHERE cgroup_id = '" . (int)$customer_group_id . "'"); #miwoshop-start]]></add>
+        </operation>
+        
+		<operation error="skip">
+            <search><![CDATA[public function deleteCustomerGroup($customer_group_id) {]]></search>
+            <add position="after"><![CDATA[        $this->db->query("DELETE FROM " . DB_PREFIX . "mgroup_cgroup_map WHERE cgroup_id = '" . (int)$customer_group_id . "'"); #miwoshop-start]]></add>
+        </operation>
+    </file>	
+	
+    <file path="admin/model/sale/voucher.php">
+        <operation error="skip">
+            <search><![CDATA[$data['image'] = HTTP_CATALOG . 'image/' . $voucher_theme_info['image'];]]></search>
+            <add position="replace"><![CDATA[$data['image'] = HTTP_IMAGE . $voucher_theme_info['image']; #miwoshop-start]]></add>
+        </operation>
+    </file>
+
+	<file path="admin/model/user/user.php">
+        <operation error="skip">
+            <search><![CDATA[$this->db->query("INSERT INTO `" . DB_PREFIX . "user` SET username = '" . $this->db->escape($data['username']) . "', user_group_id = '" . (int)$data['user_group_id'] . "', salt = '" . $this->db->escape($salt = substr(md5(uniqid(rand(), true)), 0, 9)) . "', password = '" . $this->db->escape(sha1($salt . sha1($salt . sha1($data['password'])))) . "', firstname = '" . $this->db->escape($data['firstname']) . "', lastname = '" . $this->db->escape($data['lastname']) . "', email = '" . $this->db->escape($data['email']) . "', image = '" . $this->db->escape($data['image']) . "', status = '" . (int)$data['status'] . "', date_added = NOW()");]]></search>
+            <add position="replace"><![CDATA[#miwoshop-start	
+		$this->db->query("INSERT INTO `" . DB_PREFIX . "user` SET username = '" . $this->db->escape($data['username']) . "', user_group_id = '" . (int)$data['user_group_id'] . "', salt = '" . $this->db->escape($salt = substr(md5(uniqid(rand(), true)), 0, 9)) . "', password = '" . $this->db->escape(Miwoshop::get('user')->encryptPassword($data['password'])) . "', firstname = '" . $this->db->escape($data['firstname']) . "', lastname = '" . $this->db->escape($data['lastname']) . "', email = '" . $this->db->escape($data['email']) . "', image = '" . $this->db->escape($data['image']) . "', status = '" . (int)$data['status'] . "', date_added = NOW()");        $user_id = $this->db->getLastId();
+        MiwoShop::get('user')->createJUserFromO($data, $user_id);
+		#miwoshop-finish]]></add>
+        </operation>
+        
+		<operation error="skip">
+            <search><![CDATA[if ($data['password']) {]]></search>
+            <add position="before"><![CDATA[        MiwoShop::get('user')->updateJUserFromO(MiwoShop::get('user')->getJUserIdFromOUser($user_id, $data['username'], $data['email']), $data, $user_id); #miwoshop-start]]></add>
+        </operation>
+        
+		<operation error="skip">
+            <search><![CDATA[public function deleteUser($user_id) {]]></search>
+            <add position="after"><![CDATA[        MiwoShop::get('user')->deleteJUserFromO($user_id, true); #miwoshop-start]]></add>
+        </operation>
+        
+		<operation error="skip">
+            <search><![CDATA[$this->db->query("UPDATE `" . DB_PREFIX . "user` SET salt = '" . $this->db->escape($salt = substr(md5(uniqid(rand(), true)), 0, 9)) . "', password = '" . $this->db->escape(sha1($salt . sha1($salt . sha1($data['password'])))) . "' WHERE user_id = '" . (int)$user_id . "'");]]></search>
+            <add position="replace"><![CDATA[$this->db->query("UPDATE `" . DB_PREFIX . "user` SET password = '" . $this->db->escape(Miwoshop::get('user')->encryptPassword($data['password'])) . "' WHERE user_id = '" . (int)$user_id . "'"); #miwoshop-start]]></add>
+        </operation>
+        
+		<operation error="skip">
+            <search><![CDATA[$this->db->query("UPDATE `" . DB_PREFIX . "user` SET salt = '" . $this->db->escape($salt = substr(md5(uniqid(rand(), true)), 0, 9)) . "', password = '" . $this->db->escape(sha1($salt . sha1($salt . sha1($password)))) . "', code = '' WHERE user_id = '" . (int)$user_id . "'");]]></search>
+            <add position="replace"><![CDATA[$this->db->query("UPDATE `" . DB_PREFIX . "user` SET password = '" . $this->db->escape(Miwoshop::get('user')->encryptPassword($password)) . "', code = '' WHERE user_id = '" . (int)$user_id . "'"); #miwoshop-start]]></add>
+        </operation>
+    </file>
+
+    <file path="admin/model/user/user_group.php">
+        <operation error="skip">
+            <search><![CDATA[$this->db->query("INSERT INTO " . DB_PREFIX . "user_group SET name = '" . $this->db->escape($data['name']) . "', permission = '" . (isset($data['permission']) ? $this->db->escape(serialize($data['permission'])) : '') . "'");]]></search>
+            <add position="after"><![CDATA[		#miwoshop-start
+        $user_group_id = $this->db->getLastId();
+        $this->db->query("INSERT INTO " . DB_PREFIX . "mgroup_ugroup_map SET mgroup_id = '" . $data['mgroup_id'] . "', ugroup_id = '" . (int)$user_group_id . "'");
+		#miwoshop-finish]]></add>
+        </operation>
+        
+		<operation error="skip">
+            <search><![CDATA[public function editUserGroup($user_group_id, $data) {]]></search>
+            <add position="after"><![CDATA[        $this->db->query("UPDATE " . DB_PREFIX . "mgroup_ugroup_map SET mgroup_id = '" . $data['mgroup_id'] . "' WHERE ugroup_id = '" . (int)$user_group_id . "'"); #miwoshop-start]]></add>
+        </operation>
+        
+		<operation error="skip">
+            <search><![CDATA[public function deleteUserGroup($user_group_id) {]]></search>
+            <add position="after"><![CDATA[        $this->db->query("DELETE FROM " . DB_PREFIX . "mgroup_ugroup_map WHERE ugroup_id = '" . (int)$user_group_id . "'"); #miwoshop-start]]></add>
+        </operation>
+    </file>
+	
+	<file path="admin/view/template/catalog/information_form.tpl">
+        <operation error="skip">
+            <search index="3"><![CDATA[<div class="form-group">]]></search>
+            <add position="replace" offset="8"><![CDATA[]]></add>
+        </operation>
+		
+		<operation error="skip">
+            <search index="2"><![CDATA[<div class="form-group required">]]></search>
+            <add position="replace"><![CDATA[<div class="form-group">]]></add>
+        </operation>
+        
+		<operation error="skip">
+            <search><![CDATA[<label class="col-sm-2 control-label" for="input-description"><?php echo $entry_description; ?></label>]]></search>
+            <add position="before" offset="1"><![CDATA[				<div class="form-group">
+				<label class="col-sm-2 control-label" for="input-alias"><?php echo MText::_('COM_MIWOSHOP_ALIAS'); ?></label>
+				<div class="col-sm-10">
+					<input type="text" class="form-control" placeholder="<?php echo MText::_('COM_MIWOSHOP_ALIAS'); ?>" name="keyword[<?php echo $language['language_id']; ?>]" id="input-alias" value="<?php echo isset($keyword[$language['language_id']]) ? $keyword[$language['language_id']] : ''; ?>" />
+				</div>
+				</div>]]></add>
+        </operation>
+        
+		<operation error="skip">
+            <search><![CDATA[<li><a href="#tab-design" data-toggle="tab"><?php echo $tab_design; ?></a></li>]]></search>
+            <add position="after"><![CDATA[            <?php if (MiwoShop::get('base')->isMiwosefInstalled()) { ?><li><a href="#tab-miwosef" data-toggle="tab">MiwoSEF</a></li><?php } ?>]]></add>
+        </operation>
+        
+		<operation error="skip">
+            <search><![CDATA[<div class="tab-pane" id="tab-design">]]></search>
+            <add position="before"><![CDATA[
+        <?php if (MiwoShop::get('base')->isMiwosefInstalled()) { ?>
+		<div class="tab-pane" id="tab-miwosef">
+		  <ul class="nav nav-tabs" id="languagessef">
+			<?php foreach ($languages as $language) { ?>
+              <li><a href="#languagesef<?php echo $language['language_id']; ?>" data-toggle="tab"><img src="view/image/flags/<?php echo $language['image']; ?>" title="<?php echo $language['name']; ?>" /> <?php echo $language['name']; ?></a></li>
+			<?php } ?>
+		  </ul>
+		  <BR />
+            <?php foreach ($languages as $language) { ?>
+            <div class="tab-pane" id="languagesef<?php echo $language['language_id']; ?>">
+			  <div class="form-group required">
+				<label class="col-sm-2 control-label" for="input-sef-url">SEF URL</label>
+				<div class="col-sm-10">
+					<input type="text" name="miwosef[<?php echo $language['language_id']; ?>][url_sef]" class="form-control" placeholder="SEF Url" value="<?php echo MiwoShop::get('miwosef')->get('url_sef', 'information', MRequest::getInt('information_id', 0, 'get'), $language['language_id']); ?>" />
+				</div>
+			  </div>
+			  <div class="form-group">
+				<label class="col-sm-2 control-label" for="input-sef-url">Meta Title</label>
+				<div class="col-sm-10">
+					<input type="text" name="miwosef[<?php echo $language['language_id']; ?>][title]" class="form-control" placeholder="Meta Title" value="<?php echo MiwoShop::get('miwosef')->get('title', 'information', MRequest::getInt('information_id', 0, 'get'), $language['language_id']); ?>" />
+				</div>
+			  </div>
+			  <div class="form-group">
+				<label class="col-sm-2 control-label" for="input-sef-url">Meta Description</label>
+				<div class="col-sm-10">
+					<textarea class="text_area" name="miwosef[<?php echo $language['language_id']; ?>][description]" cols="57" rows="5" placeholder="Meta Description"><?php echo MiwoShop::get('miwosef')->get('description', 'information', MRequest::getInt('information_id', 0, 'get'), $language['language_id']); ?></textarea>
+				</div>
+			  </div>
+			  <div class="form-group">
+				<label class="col-sm-2 control-label" for="input-sef-url">Meta Keywords</label>
+				<div class="col-sm-10">
+					<textarea class="text_area" name="miwosef[<?php echo $language['language_id']; ?>][keywords]" cols="57" rows="5" placeholder="Meta Keywords"><?php echo MiwoShop::get('miwosef')->get('keywords', 'information', MRequest::getInt('information_id', 0, 'get'), $language['language_id']); ?></textarea>
+				</div>
+			  </div>
+			  <div class="form-group">
+				<label class="col-sm-2 control-label" for="input-sef-url">Meta Language</label>
+				<div class="col-sm-10">
+					<input type="text" name="miwosef[<?php echo $language['language_id']; ?>][lang]" class="form-control" placeholder="Meta Language" value="<?php echo MiwoShop::get('miwosef')->get('lang', 'information', MRequest::getInt('information_id', 0, 'get'), $language['language_id']); ?>" />
+				</div>
+			  </div>
+			  <div class="form-group">
+				<label class="col-sm-2 control-label" for="input-sef-url">Meta Robots</label>
+				<div class="col-sm-10">
+					<input type="text" name="miwosef[<?php echo $language['language_id']; ?>][robots]" class="form-control" placeholder="Meta Robots" value="<?php echo MiwoShop::get('miwosef')->get('robots', 'information', MRequest::getInt('information_id', 0, 'get'), $language['language_id']); ?>" />
+				</div>
+			  </div>
+			  <div class="form-group">
+				<label class="col-sm-2 control-label" for="input-sef-url">Meta Googlebot</label>
+				<div class="col-sm-10">
+					<input type="text" name="miwosef[<?php echo $language['language_id']; ?>][googlebot]" class="form-control" placeholder="Meta Googlebot" value="<?php echo MiwoShop::get('miwosef')->get('googlebot', 'information', MRequest::getInt('information_id', 0, 'get'), $language['language_id']); ?>" />
+				</div>
+			  </div>
+			  <div class="form-group">
+				<label class="col-sm-2 control-label" for="input-sef-url">Meta Canonical URL</label>
+				<div class="col-sm-10">
+					<input type="text" name="miwosef[<?php echo $language['language_id']; ?>][canonical]" class="form-control" placeholder="Meta Canonical URL" value="<?php echo MiwoShop::get('miwosef')->get('canonical', 'information', MRequest::getInt('information_id', 0, 'get'), $language['language_id']); ?>" />
+				</div>
+			  </div>
+                <input type="hidden" name="miwosef[<?php echo $language['language_id']; ?>][url_id]" value="<?php echo MiwoShop::get('miwosef')->get('url_id', 'information', MRequest::getInt('information_id', 0, 'get'), $language['language_id']); ?>" />
+                <input type="hidden" name="miwosef[<?php echo $language['language_id']; ?>][meta_id]" value="<?php echo MiwoShop::get('miwosef')->get('meta_id', 'information', MRequest::getInt('information_id', 0, 'get'), $language['language_id']); ?>" />
+                <input type="hidden" name="miwosef[<?php echo $language['language_id']; ?>][route_var]" value="route=information/information" />
+                <input type="hidden" name="miwosef[<?php echo $language['language_id']; ?>][route_id]" value="information_id=<?php echo MRequest::getInt('information_id', 0, 'get'); ?>" />
+            </div>
+            <?php } ?>
+        </div>
+        <?php } ?>]]></add>
+        </operation>
+        
+		<operation error="skip">
+            <search><![CDATA[$('#language a:first').tab('show');]]></search>
+            <add position="after"><![CDATA[
+$('#languagessef a:first').tab('show');
+        ]]></add>
+        </operation>
+    </file>
+
+    <file path="admin/view/template/catalog/category_form.tpl">
+        <operation error="skip">
+            <search><![CDATA[<label class="col-sm-2 control-label" for="input-keyword"><span data-toggle="tooltip" title="<?php echo $help_keyword; ?>"><?php echo $entry_keyword; ?></span></label>]]></search>
+            <add position="replace" offset="6"><![CDATA[]]></add>
+        </operation>
+		
+		<operation error="skip">
+            <search index="1"><![CDATA[<div class="form-group required">]]></search>
+            <add position="replace"><![CDATA[<div class="form-group">]]></add>
+        </operation> 
+		
+		<operation error="skip">
+            <search><![CDATA[<label class="col-sm-2 control-label" for="input-description<?php echo $language['language_id']; ?>"><?php echo $entry_description; ?></label>]]></search>
+            <add position="before" offset="1"><![CDATA[				<div class="form-group">
+				<label class="col-sm-2 control-label" for="input-alias"><?php echo MText::_('COM_MIWOSHOP_ALIAS'); ?></label>
+				<div class="col-sm-10">
+					<input type="text" class="form-control" placeholder="<?php echo MText::_('COM_MIWOSHOP_ALIAS'); ?>" name="keyword[<?php echo $language['language_id']; ?>]" id="input-alias" value="<?php echo isset($keyword[$language['language_id']]) ? $keyword[$language['language_id']] : ''; ?>" />
+				</div>
+				</div>]]></add>
+        </operation>
+        
+		<operation error="skip">
+            <search><![CDATA[<li><a href="#tab-design" data-toggle="tab"><?php echo $tab_design; ?></a></li>]]></search>
+            <add position="after"><![CDATA[            <?php if (MiwoShop::get('base')->isMiwosefInstalled()) { ?><li><a href="#tab-miwosef" data-toggle="tab">MiwoSEF</a></li><?php } ?>]]></add>
+        </operation>
+        
+		<operation error="skip">
+            <search><![CDATA[<div class="tab-pane" id="tab-design">]]></search>
+            <add position="before"><![CDATA[
+        <?php if (MiwoShop::get('base')->isMiwosefInstalled()) { ?>
+		<div class="tab-pane" id="tab-miwosef">
+		  <ul class="nav nav-tabs" id="languagessef">
+			<?php foreach ($languages as $language) { ?>
+              <li><a href="#languagesef<?php echo $language['language_id']; ?>" data-toggle="tab"><img src="view/image/flags/<?php echo $language['image']; ?>" title="<?php echo $language['name']; ?>" /> <?php echo $language['name']; ?></a></li>
+			<?php } ?>
+		  </ul>
+		  <BR />
+            <?php foreach ($languages as $language) { ?>
+            <div class="tab-pane" id="languagesef<?php echo $language['language_id']; ?>">
+			  <div class="form-group required">
+				<label class="col-sm-2 control-label" for="input-sef-url">SEF URL</label>
+				<div class="col-sm-10">
+					<input type="text" name="miwosef[<?php echo $language['language_id']; ?>][url_sef]" class="form-control" placeholder="SEF Url" value="<?php echo MiwoShop::get('miwosef')->get('url_sef', 'category', MRequest::getInt('category_id', 0, 'get'), $language['language_id']); ?>" />
+				</div>
+			  </div>
+			  <div class="form-group">
+				<label class="col-sm-2 control-label" for="input-sef-url">Meta Title</label>
+				<div class="col-sm-10">
+					<input type="text" name="miwosef[<?php echo $language['language_id']; ?>][title]" class="form-control" placeholder="Meta Title" value="<?php echo MiwoShop::get('miwosef')->get('title', 'category', MRequest::getInt('category_id', 0, 'get'), $language['language_id']); ?>" />
+				</div>
+			  </div>
+			  <div class="form-group">
+				<label class="col-sm-2 control-label" for="input-sef-url">Meta Description</label>
+				<div class="col-sm-10">
+					<textarea class="text_area" name="miwosef[<?php echo $language['language_id']; ?>][description]" cols="57" rows="5" placeholder="Meta Description"><?php echo MiwoShop::get('miwosef')->get('description', 'category', MRequest::getInt('category_id', 0, 'get'), $language['language_id']); ?></textarea>
+				</div>
+			  </div>
+			  <div class="form-group">
+				<label class="col-sm-2 control-label" for="input-sef-url">Meta Keywords</label>
+				<div class="col-sm-10">
+					<textarea class="text_area" name="miwosef[<?php echo $language['language_id']; ?>][keywords]" cols="57" rows="5" placeholder="Meta Keywords"><?php echo MiwoShop::get('miwosef')->get('keywords', 'category', MRequest::getInt('category_id', 0, 'get'), $language['language_id']); ?></textarea>
+				</div>
+			  </div>
+			  <div class="form-group">
+				<label class="col-sm-2 control-label" for="input-sef-url">Meta Language</label>
+				<div class="col-sm-10">
+					<input type="text" name="miwosef[<?php echo $language['language_id']; ?>][lang]" class="form-control" placeholder="Meta Language" value="<?php echo MiwoShop::get('miwosef')->get('lang', 'category', MRequest::getInt('category_id', 0, 'get'), $language['language_id']); ?>" />
+				</div>
+			  </div>
+			  <div class="form-group">
+				<label class="col-sm-2 control-label" for="input-sef-url">Meta Robots</label>
+				<div class="col-sm-10">
+					<input type="text" name="miwosef[<?php echo $language['language_id']; ?>][robots]" class="form-control" placeholder="Meta Robots" value="<?php echo MiwoShop::get('miwosef')->get('robots', 'category', MRequest::getInt('category_id', 0, 'get'), $language['language_id']); ?>" />
+				</div>
+			  </div>
+			  <div class="form-group">
+				<label class="col-sm-2 control-label" for="input-sef-url">Meta Googlebot</label>
+				<div class="col-sm-10">
+					<input type="text" name="miwosef[<?php echo $language['language_id']; ?>][googlebot]" class="form-control" placeholder="Meta Googlebot" value="<?php echo MiwoShop::get('miwosef')->get('googlebot', 'category', MRequest::getInt('category_id', 0, 'get'), $language['language_id']); ?>" />
+				</div>
+			  </div>
+			  <div class="form-group">
+				<label class="col-sm-2 control-label" for="input-sef-url">Meta Canonical URL</label>
+				<div class="col-sm-10">
+					<input type="text" name="miwosef[<?php echo $language['language_id']; ?>][canonical]" class="form-control" placeholder="Meta Canonical URL" value="<?php echo MiwoShop::get('miwosef')->get('canonical', 'category', MRequest::getInt('category_id', 0, 'get'), $language['language_id']); ?>" />
+				</div>
+			  </div>
+                <input type="hidden" name="miwosef[<?php echo $language['language_id']; ?>][url_id]" value="<?php echo MiwoShop::get('miwosef')->get('url_id', 'category', MRequest::getInt('category_id', 0, 'get'), $language['language_id']); ?>" />
+                <input type="hidden" name="miwosef[<?php echo $language['language_id']; ?>][meta_id]" value="<?php echo MiwoShop::get('miwosef')->get('meta_id', 'category', MRequest::getInt('category_id', 0, 'get'), $language['language_id']); ?>" />
+                <input type="hidden" name="miwosef[<?php echo $language['language_id']; ?>][route_var]" value="route=product/category" />
+                <input type="hidden" name="miwosef[<?php echo $language['language_id']; ?>][route_id]" value="path=<?php echo MRequest::getInt('category_id', 0, 'get'); ?>" />
+            </div>
+            <?php } ?>
+        </div>
+        <?php } ?>]]></add>
+        </operation>
+        
+		<operation error="skip">
+            <search><![CDATA[$('#language a:first').tab('show');]]></search>
+            <add position="after"><![CDATA[
+$('#languagessef a:first').tab('show');
+        ]]></add>
+        </operation>
+    </file>
+
+	<file path="admin/view/template/catalog/product_form.tpl">
+        <operation error="skip">
+            <search><![CDATA[index.php?route=]]></search>
+            <add position="replace"><![CDATA[index.php?option=com_miwoshop&route=]]></add>
+        </operation>
+        
+		<operation error="skip">
+            <search><![CDATA[name="option]]></search>
+            <add position="replace"><![CDATA[name="option_oc]]></add>
+        </operation>
+        
+		<operation error="skip">
+            <search><![CDATA[name=\'option\']]></search>
+            <add position="replace"><![CDATA[name=\'option_oc\']]></add>
+        </operation>
+        
+		<operation error="skip">
+            <search><![CDATA[<label class="col-sm-2 control-label" for="input-keyword"><span data-toggle="tooltip" title="<?php echo $help_keyword; ?>"><?php echo $entry_keyword; ?></span></label>]]></search>
+            <add position="replace" offset="6"><![CDATA[]]></add>
+        </operation>
+		
+		<operation error="skip">
+            <search index="1"><![CDATA[<div class="form-group required">]]></search>
+            <add position="replace"><![CDATA[<div class="form-group">]]></add>
+        </operation>
+        
+		<operation error="skip">
+            <search><![CDATA[<label class="col-sm-2 control-label" for="input-description<?php echo $language['language_id']; ?>"><?php echo $entry_description; ?></label>]]></search>
+            <add position="before" offset="1"><![CDATA[				<div class="form-group">
+				<label class="col-sm-2 control-label" for="input-alias"><?php echo MText::_('COM_MIWOSHOP_ALIAS'); ?></label>
+				<div class="col-sm-10">
+					<input type="text" class="form-control" placeholder="<?php echo MText::_('COM_MIWOSHOP_ALIAS'); ?>" name="keyword[<?php echo $language['language_id']; ?>]" id="input-alias" value="<?php echo isset($keyword[$language['language_id']]) ? $keyword[$language['language_id']] : ''; ?>" />
+				</div>
+				</div>]]></add>
+        </operation>
+        
+		<operation error="skip">
+            <search><![CDATA[<li><a href="#tab-design" data-toggle="tab"><?php echo $tab_design; ?></a></li>]]></search>
+            <add position="after"><![CDATA[            <?php if (MiwoShop::get('base')->isMiwosefInstalled()) { ?><li><a href="#tab-miwosef" data-toggle="tab">MiwoSEF</a></li><?php } ?>]]></add>
+        </operation>
+        
+		<operation error="skip">
+            <search><![CDATA[<div class="tab-pane" id="tab-design">]]></search>
+            <add position="before"><![CDATA[
+        <?php if (MiwoShop::get('base')->isMiwosefInstalled()) { ?>
+		<div class="tab-pane" id="tab-miwosef">
+		  <ul class="nav nav-tabs" id="languagessef">
+			<?php foreach ($languages as $language) { ?>
+              <li><a href="#languagesef<?php echo $language['language_id']; ?>" data-toggle="tab"><img src="view/image/flags/<?php echo $language['image']; ?>" title="<?php echo $language['name']; ?>" /> <?php echo $language['name']; ?></a></li>
+			<?php } ?>
+		  </ul>
+		  <div class="tab-content">
+            <?php foreach ($languages as $language) { ?>
+            <div class="tab-pane" id="languagesef<?php echo $language['language_id']; ?>">
+			  <div class="form-group required">
+				<label class="col-sm-2 control-label" for="input-miwosef-sef-url">SEF URL</label>
+				<div class="col-sm-10">
+					<input type="text" name="miwosef[<?php echo $language['language_id']; ?>][url_sef]" id="input-miwosef-sef-url" class="form-control" placeholder="SEF Url" value="<?php echo MiwoShop::get('miwosef')->get('url_sef', 'product', MRequest::getInt('product_id', 0, 'get'), $language['language_id']); ?>" />
+				</div>
+			  </div>
+			  <div class="form-group">
+				<label class="col-sm-2 control-label" for="input-miwosef-meta-title">Meta Title</label>
+				<div class="col-sm-10">
+					<input type="text" name="miwosef[<?php echo $language['language_id']; ?>][title]" id="input-miwosef-meta-title" class="form-control" placeholder="Meta Title" value="<?php echo MiwoShop::get('miwosef')->get('title', 'product', MRequest::getInt('product_id', 0, 'get'), $language['language_id']); ?>" />
+				</div>
+			  </div>
+			  <div class="form-group">
+				<label class="col-sm-2 control-label" for="textarea-miwosef-meta-description">Meta Description</label>
+				<div class="col-sm-10">
+					<textarea class="text_area" name="miwosef[<?php echo $language['language_id']; ?>][description]" id="textarea-miwosef-meta-description" cols="57" rows="5" placeholder="Meta Description"><?php echo MiwoShop::get('miwosef')->get('description', 'product', MRequest::getInt('product_id', 0, 'get'), $language['language_id']); ?></textarea>
+				</div>
+			  </div>
+			  <div class="form-group">
+				<label class="col-sm-2 control-label" for="textarea-miwosef-meta-keywords">Meta Keywords</label>
+				<div class="col-sm-10">
+					<textarea class="text_area" name="miwosef[<?php echo $language['language_id']; ?>][keywords]" id="textarea-miwosef-meta-keywords" cols="57" rows="5" placeholder="Meta Keywords"><?php echo MiwoShop::get('miwosef')->get('keywords', 'product', MRequest::getInt('product_id', 0, 'get'), $language['language_id']); ?></textarea>
+				</div>
+			  </div>
+			  <div class="form-group">
+				<label class="col-sm-2 control-label" for="input-miwosef-meta-language">Meta Language</label>
+				<div class="col-sm-10">
+					<input type="text" name="miwosef[<?php echo $language['language_id']; ?>][lang]" id="input-miwosef-meta-language" class="form-control" placeholder="Meta Language" value="<?php echo MiwoShop::get('miwosef')->get('lang', 'product', MRequest::getInt('product_id', 0, 'get'), $language['language_id']); ?>" />
+				</div>
+			  </div>
+			  <div class="form-group">
+				<label class="col-sm-2 control-label" for="input-miwosef-meta-robots">Meta Robots</label>
+				<div class="col-sm-10">
+					<input type="text" name="miwosef[<?php echo $language['language_id']; ?>][robots]" id="input-miwosef-meta-robots" class="form-control" placeholder="Meta Robots" value="<?php echo MiwoShop::get('miwosef')->get('robots', 'product', MRequest::getInt('product_id', 0, 'get'), $language['language_id']); ?>" />
+				</div>
+			  </div>
+			  <div class="form-group">
+				<label class="col-sm-2 control-label" for="input-miwosef-meta-googlebot">Meta Googlebot</label>
+				<div class="col-sm-10">
+					<input type="text" name="miwosef[<?php echo $language['language_id']; ?>][googlebot]" id="input-miwosef-meta-googlebot" class="form-control" placeholder="Meta Googlebot" value="<?php echo MiwoShop::get('miwosef')->get('googlebot', 'product', MRequest::getInt('product_id', 0, 'get'), $language['language_id']); ?>" />
+				</div>
+			  </div>
+			  <div class="form-group">
+				<label class="col-sm-2 control-label" for="input-miwosef-meta-canonical-url">Meta Canonical URL</label>
+				<div class="col-sm-10">
+					<input type="text" name="miwosef[<?php echo $language['language_id']; ?>][canonical]" id="input-miwosef-meta-canonical-url" class="form-control" placeholder="Meta Canonical URL" value="<?php echo MiwoShop::get('miwosef')->get('canonical', 'product', MRequest::getInt('product_id', 0, 'get'), $language['language_id']); ?>" />
+				</div>
+			  </div>
+                <input type="hidden" name="miwosef[<?php echo $language['language_id']; ?>][url_id]" value="<?php echo MiwoShop::get('miwosef')->get('url_id', 'product', MRequest::getInt('product_id', 0, 'get'), $language['language_id']); ?>" />
+                <input type="hidden" name="miwosef[<?php echo $language['language_id']; ?>][meta_id]" value="<?php echo MiwoShop::get('miwosef')->get('meta_id', 'product', MRequest::getInt('product_id', 0, 'get'), $language['language_id']); ?>" />
+                <input type="hidden" name="miwosef[<?php echo $language['language_id']; ?>][route_var]" value="route=product/product" />
+                <input type="hidden" name="miwosef[<?php echo $language['language_id']; ?>][route_id]" value="product_id=<?php echo MRequest::getInt('product_id', 0, 'get'); ?>" />
+            </div>
+            <?php } ?>
+		  </div>  
+        </div>
+        <?php } ?>]]></add>
+        </operation>
+        
+		<operation error="skip">
+            <search><![CDATA[$('#language a:first').tab('show');]]></search>
+            <add position="after"><![CDATA[
+$('#languagessef a:first').tab('show');
+        ]]></add>
+        </operation>
+    </file>	
+
+    <file path="admin/view/template/catalog/manufacturer_form.tpl">
+        <operation error="skip">
+            <search index="1"><![CDATA[<div class="form-group">]]></search>
+            <add position="replace" offset="8"><![CDATA[]]></add>
+        </operation>
+        
+		<operation error="skip">
+            <search><![CDATA[<label class="col-sm-2 control-label"><?php echo $entry_store; ?></label>]]></search>
+            <add position="before" offset="1"><![CDATA[				  
+				<div class="form-group">
+				<label class="col-sm-2 control-label" for="input-alias"><?php echo MText::_('COM_MIWOSHOP_ALIAS'); ?></label>
+				<div class="col-sm-10">
+					<input type="text" class="form-control" placeholder="<?php echo MText::_('COM_MIWOSHOP_ALIAS'); ?>" name="keyword" id="input-alias" value="<?php echo $keyword; ?>" />
+                </div>
+				</div>]]></add>
+        </operation>
+        
+		<operation error="skip">
+            <search><![CDATA[<form action="<?php echo $action; ?>" method="post" enctype="multipart/form-data" id="form-manufacturer" class="form-horizontal">]]></search>
+            <add position="after"><![CDATA[		          
+		  <ul class="nav nav-tabs" id="language">
+            <li class="active"><a href="#tab-general" data-toggle="tab">General</a></li>
+            <?php if (MiwoShop::get('base')->isMiwosefInstalled()) { ?><li><a href="#tab-miwosef" data-toggle="tab">MiwoSEF</a></li><?php } ?>
+		  </ul>
+		<div class="tab-content">
+		  <div class="tab-pane active" id="tab-general">
+		  <br />
+		  ]]></add>
+        </operation>
+        
+		<operation error="skip">
+            <search><![CDATA[</form>]]></search>
+            <add position="before"><![CDATA[
+		</div>	
+      <?php if (MiwoShop::get('base')->isMiwosefInstalled()) { ?>
+	  <div class="tab-pane" id="tab-miwosef">
+	  <br />
+		  <div class="form-group required">
+			<label class="col-sm-2 control-label" for="input-sef-url">SEF URL</label>
+			<div class="col-sm-10">
+				<input type="text" name="miwosef[0][url_sef]" id="input-sef-url" class="form-control" placeholder="SEF Url" value="<?php echo MiwoShop::get('miwosef')->get('url_sef', 'manufacturer', MRequest::getInt('manufacturer_id', 0, 'get'), 0); ?>" />
+			</div>
+		  </div>
+		  <div class="form-group">
+			<label class="col-sm-2 control-label" for="input-sef-url">Meta Title</label>
+			<div class="col-sm-10">
+				<input type="text" name="miwosef[0][title]" class="form-control" placeholder="Meta Title" value="<?php echo MiwoShop::get('miwosef')->get('title', 'manufacturer', MRequest::getInt('manufacturer_id', 0, 'get'), 0); ?>" />
+			</div>
+		  </div>
+		  <div class="form-group">
+			<label class="col-sm-2 control-label" for="input-sef-url">Meta Description</label>
+			<div class="col-sm-10">
+				<textarea class="text_area" name="miwosef[0][description]" cols="57" rows="5" placeholder="Meta Description"><?php echo MiwoShop::get('miwosef')->get('description', 'manufacturer', MRequest::getInt('manufacturer_id', 0, 'get'), 0); ?></textarea>
+			</div>
+		  </div>
+		  <div class="form-group">
+			<label class="col-sm-2 control-label" for="input-sef-url">Meta Keywords</label>
+			<div class="col-sm-10">
+				<textarea class="text_area" name="miwosef[0][keywords]" cols="57" rows="5" placeholder="Meta Keywords"><?php echo MiwoShop::get('miwosef')->get('keywords', 'manufacturer', MRequest::getInt('manufacturer_id', 0, 'get'), 0); ?></textarea>
+			</div>
+		  </div>
+		  <div class="form-group">
+			<label class="col-sm-2 control-label" for="input-sef-url">Meta Language</label>
+			<div class="col-sm-10">
+				<input type="text" name="miwosef[0][lang]" class="form-control" placeholder="Meta Language" value="<?php echo MiwoShop::get('miwosef')->get('lang', 'manufacturer', MRequest::getInt('manufacturer_id', 0, 'get'), 0); ?>" />
+			</div>
+		  </div>
+		  <div class="form-group">
+			<label class="col-sm-2 control-label" for="input-sef-url">Meta Robots</label>
+			<div class="col-sm-10">
+				<input type="text" name="miwosef[0][robots]" class="form-control" placeholder="Meta Robots" value="<?php echo MiwoShop::get('miwosef')->get('robots', 'manufacturer', MRequest::getInt('manufacturer_id', 0, 'get'), 0); ?>" />
+			</div>
+		  </div>
+		  <div class="form-group">
+			<label class="col-sm-2 control-label" for="input-sef-url">Meta Googlebot</label>
+			<div class="col-sm-10">
+				<input type="text" name="miwosef[0][googlebot]" class="form-control" placeholder="Meta Googlebot" value="<?php echo MiwoShop::get('miwosef')->get('googlebot', 'manufacturer', MRequest::getInt('manufacturer_id', 0, 'get'), 0); ?>" />
+			</div>
+		  </div>
+		  <div class="form-group">
+			<label class="col-sm-2 control-label" for="input-sef-url">Meta Canonical URL</label>
+			<div class="col-sm-10">
+				<input type="text" name="miwosef[0][canonical]" class="form-control" placeholder="Meta Canonical URL" value="<?php echo MiwoShop::get('miwosef')->get('canonical', 'manufacturer', MRequest::getInt('manufacturer_id', 0, 'get'), 0); ?>" />
+			</div>
+		  </div>
+            <input type="hidden" name="miwosef[0][url_id]" value="<?php echo MiwoShop::get('miwosef')->get('url_id', 'manufacturer', MRequest::getInt('manufacturer_id', 0, 'get'), 0); ?>" />
+            <input type="hidden" name="miwosef[0][meta_id]" value="<?php echo MiwoShop::get('miwosef')->get('meta_id', 'manufacturer', MRequest::getInt('manufacturer_id', 0, 'get'), 0); ?>" />
+            <input type="hidden" name="miwosef[0][route_var]" value="route=product/manufacturer/info" />
+            <input type="hidden" name="miwosef[0][route_id]" value="manufacturer_id=<?php echo MRequest::getInt('manufacturer_id', 0, 'get'); ?>" />
+        </div>
+        <?php } ?>
+	</div>	
+		]]></add>
+        </operation>
+    </file>	
+		
+	<file path="admin/view/template/localisation/order_status_list.tpl">
+        <operation error="skip">
+            <search><![CDATA[<td class="text-right"><?php echo $column_action; ?></td>]]></search>
+            <add position="before"><![CDATA[				  <td class="text-center">ID</td>]]></add>
+        </operation>
+        
+		<operation error="skip">
+            <search><![CDATA[<td class="text-left"><?php echo $order_status['name']; ?></td>]]></search>
+            <add position="after"><![CDATA[				  <td class="center"><?php echo $order_status['order_status_id']; ?></td>]]></add>
+        </operation>
+        
+		<operation error="skip">
+            <search><![CDATA[<td class="text-center" colspan="3"><?php echo $text_no_results; ?></td>]]></search>
+            <add position="replace"><![CDATA[<td class="text-center" colspan="4"><?php echo $text_no_results; ?></td>]]></add>
+        </operation>
+    </file>	
+
+	<file path="admin/view/template/marketing/contact.tpl">    
+		<operation error="skip">
+            <search><![CDATA[onclick="send(]]></search>
+            <add position="replace"><![CDATA[onclick="sendEmail(]]></add>
+        </operation>
+        
+		<operation error="skip">
+            <search><![CDATA[function send(url) {]]></search>
+            <add position="replace"><![CDATA[function sendEmail(url) {
+    <?php echo MiwoShop::get('base')->editor()->save("message"); ?>
+    ]]></add>
+        </operation>
+        
+		<operation error="skip">
+            <search><![CDATA[send(json['next']);]]></search>
+            <add position="replace"><![CDATA[sendEmail(json['next']);]]></add>
+        </operation>
+        
+		<operation error="skip">
+            <search><![CDATA[$('textarea[name=\'message\']').html($('#input-message').code());]]></search>
+            <add position="replace"><![CDATA[$('textarea[name=\'message\']').html(jQuery('textarea[name=\'message\']').val());]]></add>
+        </operation>
+    </file>
+	
+	<file path="admin/view/template/sale/customer_group_form.tpl">
+        <operation error="skip">
+            <search><![CDATA[<label class="col-sm-2 control-label"><?php echo $entry_name; ?></label>]]></search>
+            <add position="before" offset="1"><![CDATA[            <div class="form-group required">
+            <label class="col-sm-2 control-label">WordPress Role:</label>
+            <div class="col-sm-10">
+				<?php echo $jgroups; ?>
+            </div>
+          </div>]]></add>
+        </operation>
+    </file>	
+	
+	<file path="admin/view/template/sale/order_form.tpl">
+        <operation error="skip">
+            <search><![CDATA[ name="option[]]></search>
+            <add position="replace"><![CDATA[ name="option_oc[]]></add>
+        </operation>
+        
+		<operation error="skip">
+            <search><![CDATA[var url = 'index.php?route=sale/order/api]]></search>
+            <add position="replace"><![CDATA[var url = 'index.php?route=sale/order/api&j_user_id=<?php echo MFactory::getUser()->get("id"); ?>]]></add>
+        </operation>
+		
+		<operation error="skip">
+            <search><![CDATA[url: 'index.php?route=sale/order/api]]></search>
+            <add position="replace"><![CDATA[url: 'index.php?route=sale/order/api&j_user_id=<?php echo MFactory::getUser()->get("id"); ?>]]></add>
+        </operation>
+        
+		<operation error="skip">
+            <search><![CDATA[for (i in json['vouchers']) {]]></search>
+            <add position="replace"><![CDATA[
+                    for (i = 0; i <  json['vouchers'].length; i++) {
+            ]]></add>
+        </operation>
+        
+		<operation error="skip">
+            <search><![CDATA[for (i in json['totals']) {]]></search>
+            <add position="replace"><![CDATA[for (i = 0; i <  json['totals'].length; i++) {]]></add>
+        </operation>
+        
+		<operation error="skip">
+            <search><![CDATA[for (i in json['payment_methods']) {]]></search>
+            <add position="after"><![CDATA[
+							if(typeof json['payment_methods'][i] !== "object" ) {
+								continue;
+							}]]></add>
+        </operation>
+        
+		<operation error="skip">
+            <search><![CDATA[for (i in json['shipping_methods']) {]]></search>
+            <add position="after"><![CDATA[
+							if(typeof json['shipping_methods'][i] !== "object" ) {
+								continue;
+							}]]></add>
+        </operation>
+   </file>
+	
+	<file path="admin/view/template/sale/order_invoice.tpl">
+        <operation error="skip">
+            <search><![CDATA[<link type="text/css" href="view/stylesheet/stylesheet.css" rel="stylesheet" media="all" />]]></search>
+            <add position="replace"><![CDATA[<link type="text/css" href="admin/view/stylesheet/stylesheet.css" rel="stylesheet" media="all" />]]></add>
+        </operation>
+  </file>
+
+	<file path="admin/view/template/setting/setting.tpl">
+		<operation error="skip">
+			<search position="replace"><![CDATA[index.php?route=]]></search>
+			<add><![CDATA[index.php?option=com_miwoshop&route=]]></add>
+		</operation>
+		
+		<operation error="skip">
+			<search><![CDATA[<label class="col-sm-2 control-label" for="input-icon"><?php echo $entry_icon; ?></label>]]></search>
+			<add position="replace" offset="3"><![CDATA[]]></add>
+		</operation>
+		
+		<operation error="skip">
+			<search><![CDATA[<label class="col-sm-2 control-label"><span data-toggle="tooltip" title="<?php echo $help_seo_url; ?>"><?php echo $entry_seo_url; ?></span></label>]]></search>
+			<add position="replace" offset="20"><![CDATA[]]></add>
+		</operation>
+   </file>
+
+	<file path="admin/view/template/setting/store_form.tpl">
+        <operation error="skip">
+            <search><![CDATA[index.php?route=]]></search>
+            <add position="replace"><![CDATA[index.php?option=com_miwoshop&route=]]></add>
+        </operation>
+        
+		<operation error="skip">
+            <search><![CDATA[<label class="col-sm-2 control-label" for="input-icon"><span data-toggle="tooltip" title="<?php echo $help_icon; ?>"><?php echo $entry_icon; ?></span></label>]]></search>
+            <add position="replace" offset="3"><![CDATA[]]></add>
+        </operation>
+    </file>
+	
+    <file path="admin/view/template/user/user_group_form.tpl">
+        <operation error="skip">
+            <search><![CDATA[<div class="text-danger"><?php echo $error_name; ?></div>]]></search>
+            <add position="after" offset="3"><![CDATA[		<div class="form-group required">
+            <label class="col-sm-2 control-label" for="input-name">WordPress Role:</label>
+            <div class="col-sm-10">
+				<?php echo $jgroups; ?>
+            </div>
+          </div>]]></add>
+        </operation>
+    </file>
+
+    <file path="admin/view/template/common/dashboard.tpl">
+        <operation error="skip">
+            <search><![CDATA[<ul class="breadcrumb">]]></search>
+            <add position="replace"><![CDATA[<ul class="breadcrumb" style="display:none">]]></add>
+        </operation>
+    </file>
+	
+	<file path="admin/controller/catalog/product.php">
+        <operation error="log">
+            <search><![CDATA[if ((utf8_strlen($value['meta_title']) < 3) || (utf8_strlen($value['meta_title']) > 255)) {]]></search>
+            <add position="replace" offset="2"><![CDATA[]]></add>
+        </operation>
+        <operation error="log">
+            <search index="1"><![CDATA['required'             => $product_option['required']]]></search>
+            <add position="replace"><![CDATA['required'             => (int)$product_option['required']]]></add>
+        </operation>
+    </file>
+	
+	<file path="admin/model/catalog/product.php">
+        <operation error="log">
+            <search><![CDATA[$this->event->trigger('pre.admin.product.add', $data);]]></search>
+            <add position="after"><![CDATA[        #miwoshop-start
+        foreach($data['product_description'] as $language_id => $value){
+            if(empty($value['meta_title'])) {
+                $data['product_description'][$language_id]['meta_title'] = $value['name'];
+            }
+        }
+        #miwoshop-finish]]></add>
+        </operation>
+
+		<operation error="log">
+            <search><![CDATA[$this->event->trigger('pre.admin.product.edit', $data);]]></search>
+            <add position="after"><![CDATA[        #miwoshop-start
+        foreach($data['product_description'] as $language_id => $value){
+            if(empty($value['meta_title'])) {
+                $data['product_description'][$language_id]['meta_title'] = $value['name'];
+            }
+        }
+        #miwoshop-finish]]></add>
+        </operation>
+    </file>
+	
+	<file path="admin/controller/catalog/category.php">
+        <operation error="log">
+            <search><![CDATA[if ((utf8_strlen($value['meta_title']) < 3) || (utf8_strlen($value['meta_title']) > 255)) {]]></search>
+            <add position="replace" offset="2"><![CDATA[]]></add>
+        </operation>
+    </file>
+	
+	<file path="admin/model/catalog/category.php">
+        <operation error="log">
+            <search><![CDATA[$this->event->trigger('pre.admin.category.add', $data);]]></search>
+            <add position="after"><![CDATA[        #miwoshop-start
+		foreach($data['category_description'] as $language_id => $value){
+            if(empty($value['meta_title'])) {
+                $data['category_description'][$language_id]['meta_title'] = $value['name'];
+            }
+        }
+        #miwoshop-finish]]></add>
+        </operation>
+
+		<operation error="log">
+            <search><![CDATA[$this->event->trigger('pre.admin.category.edit', $data);]]></search>
+            <add position="after"><![CDATA[        #miwoshop-start
+		foreach($data['category_description'] as $language_id => $value){
+            if(empty($value['meta_title'])) {
+                $data['category_description'][$language_id]['meta_title'] = $value['name'];
+            }
+        }
+        #miwoshop-finish]]></add>
+        </operation>
+    </file>
+
+	<file path="admin/controller/catalog/information.php">
+        <operation error="log">
+            <search><![CDATA[if ((utf8_strlen($value['meta_title']) < 3) || (utf8_strlen($value['meta_title']) > 255)) {]]></search>
+            <add position="replace" offset="2"><![CDATA[]]></add>
+        </operation>
+    </file>
+	
+	<file path="admin/model/catalog/information.php">
+        <operation error="log">
+            <search><![CDATA[$this->event->trigger('pre.admin.information.add', $data);]]></search>
+            <add position="after"><![CDATA[        #miwoshop-start
+		foreach($data['information_description'] as $language_id => $value){
+            if(empty($value['meta_title'])) {
+                $data['information_description'][$language_id]['meta_title'] = $value['name'];
+            }
+        }
+        #miwoshop-finish]]></add>
+        </operation>
+
+		<operation error="log">
+            <search><![CDATA[$this->event->trigger('pre.admin.information.edit', $data);]]></search>
+            <add position="after"><![CDATA[        #miwoshop-start
+		foreach($data['information_description'] as $language_id => $value){
+            if(empty($value['meta_title'])) {
+                $data['information_description'][$language_id]['meta_title'] = $value['name'];
+            }
+        }
+        #miwoshop-finish]]></add>
+        </operation>
+    </file>
+	
+	<file path="admin/view/template/common/filemanager.tpl">
+        <operation error="log">
+            <search><![CDATA[<div class="modal-body">]]></search>
+            <add position="replace"><![CDATA[<div class="modal-body" style="overflow: auto;">]]></add>
+        </operation>
+    </file>
+	
+	<file path="admin/controller/catalog/product.php">
+        <operation error="skip">
+            <search index="1"><![CDATA[$this->load->model('catalog/option');]]></search>
+            <add position="after"><![CDATA[			$this->load->model('tool/image');]]></add>
+        </operation>
+		
+		<operation error="skip">
+            <search><![CDATA['option'     => $option_data,]]></search>
+            <add position="before"><![CDATA[                    'image'      => $this->model_tool_image->resize($result['image'], "45", "45"),]]></add>
+        </operation>
+    </file>
+	
+	<file path="admin/view/template/module/featured.tpl">
+        <operation error="skip">
+            <search><![CDATA[</form>]]></search>
+            <add position="before"><![CDATA[		  <input type="hidden" name="feed" value="1" />]]></add>
+        </operation>
+    </file>
+
+	<file path="admin/view/template/sale/order_info.tpl">
+        <operation error="skip">
+            <search><![CDATA[function changeStatus(){]]></search>
+            <add position="after"><![CDATA[<?php if ($openbay) { ?>]]></add>
+        </operation>
+
+		<operation error="skip">
+            <search><![CDATA[function changeStatus(){]]></search>
+            <add position="after" offset="12"><![CDATA[<?php } ?>  ]]></add>
+        </operation>
+    </file>
+    
+    <file path="admin/view/template/module/html.tpl">
+        <operation error="skip">
+            <search><![CDATA[<textarea name="module_description[<?php echo $language['language_id']; ?>][description]" placeholder="<?php echo $entry_description; ?>" id="input-description<?php echo $language['language_id']; ?>" class="form-control"><?php echo isset($module_description[$language['language_id']]['description']) ? $module_description[$language['language_id']]['description'] : ''; ?></textarea>]]></search>
+            <add position="replace"><![CDATA[<?php
+                      $desc = isset($module_description[$language['language_id']]['description']) ? $module_description[$language['language_id']]['description'] : '';
+                      echo MiwoShop::get('base')->editor()->display("module_description[".$language['language_id']."][description]", $desc, '97% !important', '320', '50', '11');
+                    ?>]]></add>
+        </operation>
+    </file>
+</modification>

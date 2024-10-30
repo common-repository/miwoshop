@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<metadata>
+	<layout title="Information">
+		<message>
+			<![CDATA[This layout will display the information page.]]>
+		</message>
+	</layout>
+    <state>
+        <name>MiwoShop: Information</name>
+        <description>This layout will display the information page.</description>
+		<url addpath="/miwoshop/site/miwoshop/elements">
+            <field name="information_id" type="miwoshopinformation" default="" label="Select Information" description="Displays the information page."/>
+		</url>
+		<params addpath="/miwoshop/site/miwoshop/elements">
+			<param name="miwoshop_store_id" type="miwoshopstore" default="" label="Select Store" description="Select the proper store for this page." />
+		</params>
+    </state>
+	<fields name="request">
+		<fieldset name="request" label="MiwoShop: Information" addfieldpath="/miwoshop/site/miwoshop/elements">
+            <field name="information_id" type="miwoshopinformation" default="" label="Select Information" description="Displays the information page."/>
+        </fieldset>
+    </fields>
+	<fields name="params">
+		<fieldset name="basic" label="MiwoShop: Store" addfieldpath="/miwoshop/site/miwoshop/elements">
+            <field name="miwoshop_store_id" type="miwoshopstore" default="" label="Select Store" description="Select the proper store for this page." />
+        </fieldset>
+    </fields>
+</metadata>

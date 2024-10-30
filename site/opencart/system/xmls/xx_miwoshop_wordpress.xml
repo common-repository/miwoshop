@@ -1,0 +1,39 @@
+<modification>
+    <name>MiwoShop Wordpress Modifications</name>
+    <code>xx_miwoshop_wordpress</code>
+    <version>1.0.0</version>
+    <link>miwisoft.com</link>
+    <author>Miwisoft LLC</author>
+
+    <file path="catalog/model/account/customer.php">
+   		<operation error="skip">
+   			<search><![CDATA[MiwoShop::get('user')->updateMUserPasswordFromO($email, $password);]]></search>
+   			<add position="replace"><![CDATA[$encrypted_password = MiwoShop::get('user')->updateMUserPasswordFromO($email, $password);]]></add>
+   		</operation>
+        <operation error="skip">
+            <search><![CDATA[$this->db->query("UPDATE " . DB_PREFIX . "customer SET salt = '" . $this->db->escape($salt = substr(md5(uniqid(rand(), true)), 0, 9)) . "', password = '" . $this->db->escape(Miwoshop::get('user')->encryptPassword($data['password'])) . "' WHERE LOWER(email) = '" . $this->db->escape(utf8_strtolower($email)) . "'"); #miwoshop-start]]></search>
+            <add position="replace"><![CDATA[$this->db->query("UPDATE " . DB_PREFIX . "customer SET salt = '" . $this->db->escape($salt = substr(md5(uniqid(rand(), true)), 0, 9)) . "', password = '" . $encrypted_password . "' WHERE LOWER(email) = '" . $this->db->escape(utf8_strtolower($email)) . "'"); #miwoshop-start]]></add>
+        </operation>
+   	</file>
+
+    <file path="admin/model/sale/customer.php">
+   		<operation error="skip">
+   			<search><![CDATA[$data['password'] = MiwoShop::get('user')->updateMUserFromO(MiwoShop::get('user')->getMUserIdFromOCustomer($customer_id), $data, $customer_id); #miwoshop-start]]></search>
+   			<add position="replace"><![CDATA[
+        if($data['password']) {
+            $data['password'] = MiwoShop::get('user')->encryptPassword($data['password']);
+        }
+
+        MiwoShop::get('user')->updateMUserFromO(MiwoShop::get('user')->getMUserIdFromOCustomer($customer_id), $data, $customer_id);
+        ]]></add>
+   		</operation>
+   	</file>
+	
+	<file path="system/library/session.php">
+		<operation error="skip">
+            <search><![CDATA[if (!session_id()) {]]></search>
+            <add position="replace" offset="8"><![CDATA[MFactory::getSession();]]></add>
+        </operation>
+    </file>
+
+</modification>

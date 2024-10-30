@@ -1,0 +1,212 @@
+.miwoshop label {
+    font-weight: normal;
+}
+
+.miwoshop #tab-review .form-horizontal .control-label{
+    text-align: left !important;
+}
+
+.miwoshop form{
+    margin: 0 !important;
+}
+
+.miwoshop textarea.form-control {
+    height: auto !important;
+}
+
+.miwoshop .close {
+    right:0px !important;
+}
+
+.miwoshop #top {
+    border-radius: 3px;
+}
+
+.miwoshop .caret {
+    margin-top: 0 !important;
+    font-size: 14px;
+}
+
+.panel-title a:hover, .panel-title a:focus {
+    text-decoration: none !important;
+}
+
+.miwoshop .list-unstyled {
+    margin-left: 0px !important;
+}
+
+.miwoshop footer {
+    padding: 15px;
+}
+
+.miwoshop .panel {
+    webkit-box-shadow: none !important;
+    box-shadow: none !important;
+}
+
+.miwoshop .well {
+    -webkit-box-shadow: none !important;
+    box-shadow: none !important;
+}
+
+.miwoshop .miwi-categoryhome h4 {
+    text-align: center;
+}
+
+.miwoshop #module_cart .dropdown-menu {
+    display : block;
+    position: inherit;
+    box-shadow: none;
+}
+
+.miwoshop .alert {
+    padding: 8px 14px 8px 14px !important;
+}
+
+.miwoshop .product-thumb .caption {
+    padding: 0 7px !important;
+    min-height: 140px !important;
+}
+
+.miwoshop .product-thumb .button-group button, .miwoshop .btn-group button, .miwoshop .input-group button , .miwoshop .nav-tabs a  , .miwoshop .dropdown, .miwoshop .btn-group , .miwoshop #cart.btn-block , .miwoshop table .btn {
+    display: inline-block !important;
+}
+
+.miwoshop .list-inline a {
+	text-decoration : none !important;
+}
+
+/* search */
+.miwoshop #search_oc {
+    margin-bottom: 10px;
+}
+
+.miwoshop #search_oc .input-lg {
+    height: 40px;
+    line-height: 20px;
+    padding: 0 10px;
+}
+.miwoshop #search_oc .btn-lg {
+    font-size: 15px;
+    padding: 0 35px;
+    height: 40px;
+    text-shadow: 0 1px 0 #FFF;
+}
+/* search end */
+
+/* cart */
+.miwoshop #cart {
+    margin-bottom: 10px;
+}
+.miwoshop #cart > .btn {
+    padding: 10px 0;
+    font-size: 12px;
+    color: #FFF;
+}
+.miwoshop #cart.open > .btn {
+    background-image: none;
+    background-color: #FFFFFF;
+    border: 1px solid #E6E6E6;
+    color: #666;
+    box-shadow: none;
+    text-shadow: none;
+}
+.miwoshop #cart.open > .btn:hover {
+    color: #444;
+}
+.miwoshop #cart .dropdown-menu {
+    background: #eee;
+    z-index: 1001;
+}
+.miwoshop #cart .dropdown-menu {
+    min-width: 100%;
+}
+.miwoshop #cart .dropdown-menu table {
+    margin-bottom: 10px;
+}
+.miwoshop #cart .dropdown-menu li > div {
+    min-width: 427px;
+    padding: 0 10px;
+}
+.miwoshop #cart .dropdown-menu li p {
+    margin: 20px 0;
+}
+/* cart end*/
+
+.miwoshop p, .miwoshop ul, .miwoshop ol, .miwoshop dl, .miwoshop blockquote, .miwoshop pre, .miwoshop address, .miwoshop fieldset, .miwoshop figure {
+   margin: 0 !important;
+}
+
+.miwoshop .input-group button, .miwoshop .input-group input{
+    height: 30px;
+}
+
+.miwoshop #module_cart .dropdown-menu {
+    display:block !important;
+	position:relative !important;
+}
+
+.miwoshop #module_cart .dropdown-menu {
+	background: transparent !important;
+	border:none !important;
+}
+.miwoshop #module_cart .dropdown-menu li > div {
+    min-width: inherit !important;
+    padding: 0 10px;
+}
+
+.miwoshop #module_cart td:nth-child(3) {
+   white-space: nowrap;
+}
+
+.miwoshop #module_cart td:nth-child(2) a {
+		max-width: 1em;
+}
+.miwoshop #module_cart .table.table-striped td:nth-child(1) {
+     display: none !important;
+}
+.miwoshop #module_cart td button {
+     padding :0 2px !important;
+	 font-weight: normal !important;
+}
+
+.miwoshop .miwoshop_manufacturer  select{
+     width : 100% !important;
+}
+
+.miwoshop  select, .miwoshop  textarea, .miwoshop  input[type="text"], .miwoshop  input[type="password"], .miwoshop  input[type="datetime"], .miwoshop  input[type="datetime-local"], .miwoshop  input[type="date"], .miwoshop  input[type="month"], .miwoshop  input[type="time"], .miwoshop  input[type="week"], .miwoshop  input[type="number"], .miwoshop  input[type="email"], .miwoshop  input[type="url"], .miwoshop  input[type="search"], .miwoshop  input[type="tel"], .miwoshop  input[type="color"], .miwoshop  .uneditable-input {
+	margin-bottom: 0px !important;
+}
+
+
+.miwoshop .product-thumb .button-group button{
+	padding : 0px !important;
+}
+
+.miwoshop #content_oc .row .col-sm-12 ul li {
+  list-style-type: none!important;
+  text-align: center !important;
+  min-height: 120px;
+}
+
+.miwoshop #content_oc .row .col-sm-12 li {
+  display: block!important;
+  float: left!important;
+  margin: 0!important;
+  width: 25%!important;
+}
+
+/* Media 767px start */
+@media (max-width: 767px) {
+    .miwoshop {
+        margin-top: 30px;
+    }
+
+    .btn-block input {
+        width: 42px !important;
+    }
+
+    .miwoshop #content_oc .row .col-sm-12 li {
+        width: 49%!important;
+    }
+}

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="2.5.0" type="plugin" group="miwoshop" method="upgrade">
+	<name>Miwoshop - Triggers</name>
+	<author>Miwisoft LLC</author>
+	<creationDate>October 2012</creationDate>
+	<copyright>Copyright (C) Miwisoft LLC, miwisoft.com</copyright>
+	<license>GNU/GPL, http://www.gnu.org/licenses/gpl-2.0.html</license>
+	<authorEmail>info@miwisoft.com</authorEmail>
+	<authorUrl>http://miwisoft.com</authorUrl>
+	<version>1.0.0</version>
+	<description>Triggers for MiwoShop.</description>
+	<files>
+		<filename plugin="trigger">trigger.php</filename>
+	</files>
+</extension>

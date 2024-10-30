@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="2.5" type="plugin" group="system" method="upgrade">
+	<name>MiwoShop - JS</name>
+	<author>Miwisoft LLC</author>
+	<creationDate>January 2014</creationDate>
+	<authorEmail>info@miwisoft.com</authorEmail>
+	<authorUrl>http://miwisoft.com</authorUrl>
+	<copyright>Copyright (C) Miwisoft LLC, miwisoft.com</copyright>
+	<license>GNU/GPL, http://www.gnu.org/licenses/gpl-2.0.html</license>
+	<version>1.0.0</version>
+	<description><![CDATA[JS libraries required for MiwoShop. Don't unpublish this plugin unless you know what you're doing.]]></description>
+	
+	<files>
+		<filename plugin="js">js.php</filename>
+		<filename>script.php</filename>
+		<folder>js</folder>
+	</files>
+	
+	<scriptfile>script.php</scriptfile>
+
+	<config>
+		<fields name="params">
+			<fieldset name="basic">
+				<field name="only_miwoshop" type="radio" class="btn-group" default="1" label="Only if MiwoShop" description="Load the following libraries only viewing any MiwoShop module or page.">
+					<option value="0">No</option>
+					<option value="1">Yes</option>
+				</field>
+				<field name="load_main" type="list" default="1" label="Load jQuery" description="Load the main library of jQuery.">
+                    <option value="0">No</option>
+                    <option value="1">Both sides</option>
+                    <option value="2">Only Front-end</option>
+                    <option value="3">Only Back-end</option>
+                </field>
+                <field name="remove_other_jq" type="radio" class="btn-group" default="0" label="Remove other jQuery libs" description="Remove all other jQuery libraries load by other extensions and keep just the MiwoShop's one loaded.">
+                    <option value="0">No</option>
+                    <option value="1">Yes</option>
+                </field>
+                <field name="load_noconflict" type="radio" class="btn-group" default="1" label="Load jQuery Noconflict" description="Load Noconflict library of jQuery.">
+                    <option value="0">No</option>
+                    <option value="1">Yes</option>
+                </field>
+				<field name="load_ui" type="list" default="1" label="Load jQuery UI" description="Load UI library of jQuery.">
+					<option value="0">No</option>
+					<option value="1">Both sides</option>
+					<option value="2">Only Front-end</option>
+					<option value="3">Only Back-end</option>
+				</field>
+                <field name="load_migrate" type="radio" class="btn-group" default="0" label="Load jQuery Migration" description="Load jQuery migration script for jQuery 1.9 compatibility.">
+					<option value="0">No</option>
+					<option value="1">Yes</option>
+				</field>
+				<field name="load_cookie" type="radio" class="btn-group" default="0" label="Load Cookie" description="Load Cookie library of jQuery.">
+					<option value="0">No</option>
+					<option value="1">Yes</option>
+				</field>
+				<field name="load_colorbox" type="radio" class="btn-group" default="1" label="Load Colorbox" description="Load Colorbox library of jQuery.">
+					<option value="0">No</option>
+					<option value="1">Yes</option>
+				</field>
+				<field name="load_cycle" type="radio" class="btn-group" default="1" label="Load Cycle" description="Load Cycle library of jQuery.">
+					<option value="0">No</option>
+					<option value="1">Yes</option>
+				</field>
+				<field name="load_jcarousel" type="radio" class="btn-group" default="1" label="Load jCarousel" description="Load jCarousel library of jQuery.">
+					<option value="0">No</option>
+					<option value="1">Yes</option>
+				</field>
+				<field name="load_nivo_slider" type="radio" class="btn-group" default="1" label="Load Nivo Slider" description="Load Nivo Slider library of jQuery.">
+					<option value="0">No</option>
+					<option value="1">Yes</option>
+				</field>
+			</fieldset>
+		</fields>
+	</config>
+</extension>

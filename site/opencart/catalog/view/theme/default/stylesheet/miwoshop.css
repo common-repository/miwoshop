@@ -1,0 +1,201 @@
+.miwoshop #top .container_oc span {
+    font-size: 12px;
+}
+
+.miwoshop #cart-total {
+    font-size: 12px;
+}
+
+.miwoshop h3 {
+    margin: 13px 0 !important;
+}
+
+.miwoshop h4 {
+    margin: 12px 0 !important;
+}
+
+.miwoshop .btn-inverse {
+	color: #fff;
+	text-shadow: 0 -1px 0 rgba(0,0,0,0.25);
+	background-color: #363636;
+	background-image: -moz-linear-gradient(top,#444,#222);
+	background-image: -webkit-gradient(linear,0 0,0 100%,from(#444),to(#222));
+	background-image: -webkit-linear-gradient(top,#444,#222);
+	background-image: -o-linear-gradient(top,#444,#222);
+	background-image: linear-gradient(to bottom,#444,#222);
+	background-repeat: repeat-x;
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff444444', endColorstr='#ff222222', GradientType=0);
+	border-color: #222 #222 #000000;
+	*background-color: #222;
+	filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+}
+.miwoshop .btn-inverse:hover,
+.miwoshop .btn-inverse:focus,
+.miwoshop .btn-inverse:active,
+.miwoshop .btn-inverse.active,
+.miwoshop .btn-inverse.disabled,
+.miwoshop .btn-inverse[disabled] {
+	color: #fff;
+	background-color: #222;
+	*background-color: #151515;
+}
+.miwoshop .btn-inverse:active,
+.miwoshop .btn-inverse.active {
+	background-color: #090909 \9;
+}
+
+.miwoshop .dropdown-toggle {
+    display: inherit !important; 
+	position: inherit !important;
+	text-transform: none;
+    width: inherit !important;
+    height: inherit !important;
+    top: 0 !important;
+}
+
+.miwoshop #cart button {
+	white-space: nowrap;
+    text-transform: none;
+    height: 40px;
+    width: 100% !important;
+    text-align: center !important;
+    padding: 0 !important;
+}
+
+.miwoshop button.dropdown-toggle {
+    padding: inherit !important;
+}
+
+.miwoshop .dropdown-toggle:hover, .miwoshop .dropdown-toggle:focus {
+    background-color: transparent !important;
+}
+
+.miwoshop #top .container_oc a {
+    white-space: nowrap;
+}
+
+.miwoshop .dropdown-toggle:after {
+    content: "" !important;
+    width: 0;
+    left: 0;
+    line-height: 0;
+}
+
+.miwoshop a{
+    border-bottom: inherit;
+}
+
+.miwoshop .owl-controls {
+    height: 0px !important;
+}
+
+.miwoshop .table-responsive button {
+    padding: 0 !important;
+    min-width: 30px;
+}
+
+.miwoshop .thumbnail,  .miwoshop .thumbnail{
+    border: 1px solid #ddd !important;
+}
+
+/* tooltip start */
+.tooltip {
+  position: absolute;
+  z-index: 1070;
+  display: block;
+  font-size: 12px;
+  line-height: 1.4;
+  visibility: visible;
+  filter: alpha(opacity=0);
+  opacity: 0;
+}
+.tooltip.in {
+  filter: alpha(opacity=90);
+  opacity: .9;
+}
+.tooltip.top {
+  padding: 5px 0;
+  margin-top: -3px;
+}
+.tooltip.right {
+  padding: 0 5px;
+  margin-left: 3px;
+}
+.tooltip.bottom {
+  padding: 5px 0;
+  margin-top: 3px;
+}
+.tooltip.left {
+  padding: 0 5px;
+  margin-left: -3px;
+}
+.tooltip-inner {
+  max-width: 200px;
+  padding: 3px 8px;
+  color: #fff;
+  text-align: center;
+  text-decoration: none;
+  background-color: #000;
+  border-radius: 4px;
+}
+.tooltip-arrow {
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+}
+.tooltip.top .tooltip-arrow {
+  bottom: 0;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px 5px 0;
+  border-top-color: #000;
+}
+.tooltip.top-left .tooltip-arrow {
+  bottom: 0;
+  left: 5px;
+  border-width: 5px 5px 0;
+  border-top-color: #000;
+}
+.tooltip.top-right .tooltip-arrow {
+  right: 5px;
+  bottom: 0;
+  border-width: 5px 5px 0;
+  border-top-color: #000;
+}
+.tooltip.right .tooltip-arrow {
+  top: 50%;
+  left: 0;
+  margin-top: -5px;
+  border-width: 5px 5px 5px 0;
+  border-right-color: #000;
+}
+.tooltip.left .tooltip-arrow {
+  top: 50%;
+  right: 0;
+  margin-top: -5px;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #000;
+}
+.tooltip.bottom .tooltip-arrow {
+  top: 0;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 0 5px 5px;
+  border-bottom-color: #000;
+}
+.tooltip.bottom-left .tooltip-arrow {
+  top: 0;
+  left: 5px;
+  border-width: 0 5px 5px;
+  border-bottom-color: #000;
+}
+.tooltip.bottom-right .tooltip-arrow {
+  top: 0;
+  right: 5px;
+  border-width: 0 5px 5px;
+  border-bottom-color: #000;
+}
+
+/* tooltip end */

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modification>
+    <name>Removes Wishlist</name>
+    <code>miwoshop_remove_wishlist</code>
+    <version>1.0.0</version>
+    <link>http://www.miwisoft.com</link>
+    <author>Miwisoft LLC</author>
+
+	<file path="catalog/view/theme/*/template/common/header.tpl">
+        <operation error="log">
+            <search><![CDATA[<li><a href="<?php echo $wishlist; ?>" id="wishlist-total" title="<?php echo $text_wishlist; ?>"><i class="fa fa-heart"></i> <span class="hidden-xs hidden-sm hidden-md"><?php echo $text_wishlist; ?></span></a></li>]]></search>
+            <add position="replace"><![CDATA[]]></add>
+        </operation>
+    </file>
+
+    <file path="catalog/view/theme/*/template/common/footer.tpl">
+        <operation error="log">
+            <search><![CDATA[<li><a href="<?php echo $wishlist; ?>"><?php echo $text_wishlist; ?></a></li>]]></search>
+            <add position="replace"><![CDATA[]]></add>
+        </operation>
+    </file>
+
+    <file path="catalog/view/theme/*/template/account/account.tpl">
+        <operation error="log" info="Combine this one with the above operation when multi-file feature is added for path attribute">
+            <search><![CDATA[<li><a href="<?php echo $wishlist; ?>"><?php echo $text_wishlist; ?></a></li>]]></search>
+            <add position="replace"><![CDATA[]]></add>
+        </operation>
+    </file>
+
+    <file path="catalog/view/theme/*/template/product/product.tpl">
+        <operation error="log">
+            <search><![CDATA[<button type="button" data-toggle="tooltip" class="button btn-default" title="<?php echo $button_wishlist; ?>" onclick="wishlist.add('<?php echo $product_id; ?>');"><i class="fa fa-heart"></i></button>]]></search>
+            <add position="replace"><![CDATA[]]></add>
+        </operation>
+    </file>
+
+    <file path="catalog/view/theme/*/template/*/*.tpl">
+        <operation error="skip" info="Affected:product/category.tpl,product/manufacturer_info.tpl,product/product.tpl,product/search.tpl,product/special.tpl,module/bestseller.tpl,module/featured.tpl,module/latest.tpl,module/special.tpl">
+            <search><![CDATA[<button type="button" data-toggle="tooltip" title="<?php echo $button_wishlist; ?>" onclick="wishlist.add('<?php echo $product['product_id']; ?>');"><i class="fa fa-heart"></i></button>]]></search>
+            <add position="replace"><![CDATA[]]></add>
+        </operation>
+    </file>
+
+    <file path="catalog/view/theme/*/stylesheet/stylesheet.css">
+        <operation error="log" info="CSS fix for 'Add to Cart' button">
+            <search index="0"><![CDATA[width: 60%;]]></search>
+            <add position="replace"><![CDATA[width: 80%;]]></add>
+        </operation>
+    </file>
+
+    <file path="catalog/view/theme/*/template/module/account.tpl">
+        <operation error="log">
+            <search><![CDATA[<a href="<?php echo $wishlist; ?>" class="list-group-item"><?php echo $text_wishlist; ?></a>]]></search>
+            <add position="replace"><![CDATA[]]></add>
+        </operation>
+    </file>
+</modification>

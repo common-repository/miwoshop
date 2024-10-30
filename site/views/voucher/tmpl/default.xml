@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<metadata>
+	<layout title="Gift Vouchers">
+		<message>
+			<![CDATA[This layout will display the order page for gift vouchers.]]>
+		</message>
+	</layout>
+    <state>
+        <name>MiwoShop: Gift Vouchers</name>
+        <description>This layout will display the order page for gift vouchers.</description>
+		<params addpath="/miwoshop/site/miwoshop/elements">
+			<param name="miwoshop_store_id" type="miwoshopstore" default="" label="Select Store" description="Select the proper store for this page." />
+		</params>
+    </state>
+	<fields name="params">
+		<fieldset name="basic" label="MiwoShop: Store" addfieldpath="/miwoshop/site/miwoshop/elements">
+            <field name="miwoshop_store_id" type="miwoshopstore" default="" label="Select Store" description="Select the proper store for this page." />
+        </fieldset>
+    </fields>
+</metadata>

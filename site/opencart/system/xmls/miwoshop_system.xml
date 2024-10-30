@@ -1,0 +1,443 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modification>
+    <name>System Modifications</name>
+    <code>miwoshop_system</code>
+    <version>1.0.0</version>
+    <link>http://www.miwisoft.com</link>
+    <author>Miwisoft LLC</author>
+
+    <file path="system/library/user.php">
+        <operation error="log">
+            <search trim="true"><![CDATA[$this->session = $registry->get('session');]]></search>
+            <add position="after"><![CDATA[
+        #miwoshop-start
+        MiwoShop::get('user')->loginOFromJ($this, null, true);
+        #miwoshop-end
+            ]]></add>
+        </operation>
+        <operation error="log">
+            <search trim="true"><![CDATA[$this->session->data['user_id'] = $user_query->row['user_id'];]]></search>
+            <add position="after"><![CDATA[
+            #miwoshop-start
+            if(empty($this->session->data['token'])) {
+                $this->session->data['token'] = md5(mt_rand());
+                $this->request->get['token'] = $this->session->data['token'];
+            }
+            #miwoshop-end
+            ]]></add>
+        </operation>
+        <operation error="log">
+            <search trim="true" miwomod="true"><![CDATA[$user_query = $this->db->query("SELECT * FROM " . DB_PREFIX . "user WHERE username = '" . $this->db->escape($username) . "' AND (password = SHA1(CONCAT(salt, SHA1(CONCAT(salt, SHA1('" . $this->db->escape($password) . "'))))) OR password = '" . $this->db->escape(md5($password)) . "') AND status = '1'");]]></search>
+            <add position="replace"><![CDATA[
+        #miwoshop-start
+        $encrypted_password = MiwoShop::get('user')->getEncryptedOPassword($username, $password, 'Username');
+
+        $user_query = $this->db->query("SELECT * FROM " . DB_PREFIX . "user WHERE username = '" . $this->db->escape($username) . "' AND (password = SHA1(CONCAT(salt, SHA1(CONCAT(salt, SHA1('" . $this->db->escape($password) . "'))))) OR password = '" . $this->db->escape(md5($password)) . "' OR password = '" . $this->db->escape($encrypted_password) . "') AND status = '1'");
+        #miwoshop-end
+            ]]></add>
+        </operation>
+    </file>
+
+    <file path="system/library/customer.php">
+        <operation error="log">
+            <search trim="true"><![CDATA[public function login($email, $password, $override = false) {]]></search>
+            <add position="after"><![CDATA[
+        #miwoshop-start
+        $encrypted_password = MiwoShop::get('user')->getEncryptedOPassword($email, $password);
+
+        $parts	                = explode(':', $encrypted_password);
+        $encrypted_password2	= $parts[0];
+        #miwoshop-end
+            ]]></add>
+        </operation>
+        <operation error="log">
+            <search trim="true"><![CDATA[$customer_query = $this->db->query("SELECT * FROM " . DB_PREFIX . "customer WHERE LOWER(email) = '" . $this->db->escape(utf8_strtolower($email)) . "' AND (password = SHA1(CONCAT(salt, SHA1(CONCAT(salt, SHA1('" . $this->db->escape($password) . "'))))) OR password = '" . $this->db->escape(md5($password)) . "') AND status = '1' AND approved = '1'");]]></search>
+            <add position="replace"><![CDATA[			    $customer_query = $this->db->query("SELECT * FROM " . DB_PREFIX . "customer WHERE LOWER(email) = '" . $this->db->escape(utf8_strtolower($email)) . "' AND (password = SHA1(CONCAT(salt, SHA1(CONCAT(salt, SHA1('" . $this->db->escape($password) . "'))))) OR password = '" . $this->db->escape(md5($password)) . "' OR password = '" . $encrypted_password . "' OR password = '" . $encrypted_password2 . "') AND status = '1' AND approved = '1'"); #miwoshop-start]]></add>
+        </operation>
+        <operation error="log">
+            <search trim="true"><![CDATA[$this->customer_group_id = $customer_query->row['customer_group_id'];]]></search>
+            <add position="after"><![CDATA[
+            #miwoshop-start
+			$this->config->set('config_customer_group_id', $customer_query->row['customer_group_id']);
+            #miwoshop-end
+            ]]></add>
+        </operation>
+		<operation error="log">
+            <search trim="true"><![CDATA[$this->db->query("UPDATE " . DB_PREFIX . "customer SET ip = '" . $this->db->escape($this->request->server['REMOTE_ADDR']) . "' WHERE customer_id = '" . (int)$this->customer_id . "'");]]></search>
+            <add position="after"><![CDATA[
+            #miwoshop-start
+            MiwoShop::get('user')->loginJFromO($email, $password);
+            #miwoshop-end
+            ]]></add>
+        </operation>
+    </file>
+
+    <file path="system/library/affiliate.php">
+        <operation error="log">
+            <search trim="true"><![CDATA[public function login($email, $password) {]]></search>
+            <add position="after"><![CDATA[
+        #miwoshop-start
+        $encrypted_password = MiwoShop::get('user')->getEncryptedOPassword($email, $password);
+
+        $parts	                = explode(':', $encrypted_password);
+        $encrypted_password2	= $parts[0];
+        #miwoshop-end
+            ]]></add>
+        </operation>
+        <operation error="log">
+            <search trim="true"><![CDATA[$affiliate_query = $this->db->query("SELECT * FROM " . DB_PREFIX . "affiliate WHERE LOWER(email) = '" . $this->db->escape(utf8_strtolower($email)) . "' AND (password = SHA1(CONCAT(salt, SHA1(CONCAT(salt, SHA1('" . $this->db->escape($password) . "'))))) OR password = '" . $this->db->escape(md5($password)) . "') AND status = '1' AND approved = '1'");]]></search>
+            <add position="replace"><![CDATA[        $affiliate_query = $this->db->query("SELECT * FROM " . DB_PREFIX . "affiliate WHERE LOWER(email) = '" . $this->db->escape(utf8_strtolower($email)) . "' AND (password = SHA1(CONCAT(salt, SHA1(CONCAT(salt, SHA1('" . $this->db->escape($password) . "'))))) OR password = '" . $this->db->escape(md5($password)) . "' OR password = '" . $encrypted_password . "' OR password = '" . $encrypted_password2 . "') AND status = '1' AND approved = '1'"); #miwoshop-start]]></add>
+        </operation>
+        <operation error="log">
+            <search trim="true" miwomod="true" index="1"><![CDATA[$this->code = $affiliate_query->row['code'];]]></search>
+            <add position="after"><![CDATA[
+            #miwoshop-start
+            MiwoShop::get('user')->loginJFromO($email, $password);
+            #miwoshop-end
+            ]]></add>
+        </operation>
+    </file>
+
+    <file path="system/library/language.php">
+        <operation error="log">
+            <search><![CDATA[private $data = array();]]></search>
+            <add position="after"><![CDATA[    private $filename =''; #miwoshop]]></add>
+        </operation>
+        <operation error="log">
+            <search ><![CDATA[public function load($filename) {]]></search>
+            <add position="after"><![CDATA[
+        #miwoshop-start
+        if($filename == 'english') {
+            $filename = 'default';
+        }
+
+        $this->filename = $filename;
+        #miwoshop-end
+        ]]></add>
+        </operation>
+        <operation error="log">
+            <search><![CDATA[return (isset($this->data[$key]) ? $this->data[$key] : $key);]]></search>
+            <add position="before"><![CDATA[
+        #miwoshop-start
+        $file_name  = $this->filename;
+        $trace      = debug_backtrace();
+
+        if (!empty($trace)) {
+            $file_path  = $trace[0]['file'];
+            $file_path  = str_replace('\\', '/', $file_path);
+            $file_path  = str_replace('.php', '', $file_path);
+
+            $as_file            = strpos($file_path, str_replace('\\','/',$file_name));
+
+            if ($as_file === false) {
+                if (strpos($file_path, 'modification') !== false){
+                    $_file_name = strstr($file_path, 'modification');
+                }
+                else {
+                    $_file_name = strstr($file_path, 'opencart');
+                }
+
+                $_path_array = explode('/', $_file_name);
+                $path_array = array();
+                if(count($_path_array) > 4) {
+                    $path_array[0] = $_path_array[3];
+                    $path_array[1] = $_path_array[4];
+                    $file_name = implode('/', $path_array);
+                }
+            }
+        }
+
+        $string = 'COM_MIWOSHOP_'.strtoupper(str_replace('/', '_', $this->filename)).'_'.strtoupper($key);
+        $text = MText::_($string);
+
+        if ( ($text == $string or $text == '??'. $string .'??') and !MFactory::getApplication()->isAdmin() and !(isset($_GET['view']) and $_GET['view'] == 'admin') ) {
+            $string = 'COM_MIWOSHOP_'.strtoupper(str_replace('/', '_', $file_name)).'_'.strtoupper($key);
+            $text = MText::_($string);
+        }
+
+        if (isset($path_array[0]) and $path_array[0] == 'checkout' and ($text == $string or $text == '??'. $string .'??')) {
+            $string = 'COM_MIWOSHOP_'.strtoupper(str_replace('/', '_', 'checkout/checkout')).'_'.strtoupper($key);
+            $text = MText::_($string);
+        }
+
+        if ($text == $string or $text == '??'. $string .'??') {
+            $string = 'COM_MIWOSHOP_'.strtoupper($key);
+            $text = MText::_($string);
+        }
+
+        if (($text != $string) and ($text != '??'. $string .'??')) {
+            return $text;
+        }
+
+        $lang = MFactory::getLanguage();
+        $_directory =strtolower($lang->getTag());
+        $_directory =str_replace('-', '_', $_directory);
+        $text = $this->loadSecond($_directory, $this->filename, $key);
+
+        if (!empty($text)) {
+            return $text;
+        }
+        #miwoshop-end
+            ]]></add>
+        </operation>
+        <operation error="log">
+            <search><![CDATA[public function load($filename) {]]></search>
+            <add position="before"><![CDATA[
+    #miwoshop-start
+    public function loadSecond($directory, $filename, $key) {
+        $_ = array();
+
+        $file = DIR_LANGUAGE . $directory . '/' . $filename . '.php';
+        if (file_exists($file)) {
+            require(modification($file));
+        }
+
+        return (isset($_[$key]) ? $_[$key] : '');
+    }
+    #miwoshop-end
+            ]]></add>
+        </operation>
+    </file>
+
+    <file path="system/library/cache/file.php">
+        <operation error="log">
+            <search><![CDATA[$files = glob(DIR_CACHE . 'cache.*');]]></search>
+            <add position="before"><![CDATA[
+        #miwoshop-start
+        if(!is_dir(DIR_CACHE)) {
+            mkdir(DIR_CACHE);
+        }
+        #miwoshop-end
+            ]]></add>
+        </operation>
+    </file>
+
+    <file  path="system/engine/front.php">
+        <operation error="log" info="$action should be an object">
+            <search><![CDATA[while ($action) {]]></search>
+            <add  position="replace"><![CDATA[while (is_object($action)) { #miwoshop-start]]></add>
+        </operation>
+    </file>
+
+    <file  path="system/library/cart.php">
+        <operation error="log" info="For add to cart from joomla component">
+            <search><![CDATA[foreach ($options as $product_option_id => $value) {]]></search>
+            <add position="after"><![CDATA[
+                        #miwoshop-start
+                        if (strtolower($product_option_id) == 'external') {
+                            $option_data[] = array(
+                                'product_option_id'       => $product_option_id,
+                                'product_option_value_id' => $value,
+                                'option_id'               => 0,
+                                'option_value_id'         => 0,
+                                'name'                    => 'Price',
+                                'option_value'            => $value,
+                                'type'                    => 'text',
+                                'quantity'                => 1,
+                                'subtract'                => 0,
+                                'price'                   => $value,
+                                'price_prefix'            => '+',
+                                'points'                  => 0,
+                                'points_prefix'           => '+',
+                                'weight'                  => 0,
+                                'weight_prefix'           => '+'
+                            );
+                            $option_price += $option_value;
+                            continue;
+                        }
+                        #miwoshop-end
+            ]]></add>
+        </operation>
+            <operation error="log" info="For add to cart from joomla component">
+            <search><![CDATA[$recurring_query = $this->db->query("SELECT * FROM `" . DB_PREFIX .]]></search>
+            <add position="before"><![CDATA[                    #miwoshop-start
+                    foreach ($option_data as $option) {
+                        if ($option['product_option_id'] == 'external') {
+                            $price = 0;
+                            break;
+                        }
+                    }
+                    #miwoshop-end
+            ]]></add>
+        </operation>
+        <operation error="log" info="$option should be an array">
+            <search><![CDATA[if (!$option) {]]></search>
+            <add position="replace"><![CDATA[if (!$option || !is_array($option)) { #miwoshop-start]]></add>
+        </operation>
+    </file>
+
+    <file  path="system/library/currency.php">
+        <operation error="log" info="Check also post for currency">
+            <search><![CDATA[} elseif ((isset($this->session->data['currency'])) && (array_key_exists($this->session->data['currency'], $this->currencies))) {]]></search>
+            <add  position="before"><![CDATA[       } elseif (isset($this->request->post['currency_code']) && (array_key_exists($this->request->post['currency_code'], $this->currencies))) { #miwoshop-start
+            $this->set($this->request->post['currency_code']); #miwoshop-end]]></add>
+        </operation>
+		<operation error="log" info="Return also status">
+            <search><![CDATA['value'         => $result['value']]]></search>
+            <add  position="before"><![CDATA[               'status'        => $result['status'], #miwoshop-start]]></add>
+        </operation>
+		<operation error="log" info="If the status of currency false, set default currency">
+            <search><![CDATA[public function set($currency) {]]></search>
+            <add position="after"><![CDATA[
+        #miwoshop-start
+        if (empty($this->currencies[$currency]['status'])) {
+            $currency = $this->config->get('config_currency');
+        }
+        #miwoshop-end
+            ]]></add>
+        </operation>
+    </file>
+
+    <file  path="system/library/pagination.php">
+        <operation error="skip">
+            <search><![CDATA[str_replace('{page}', 1, $this->url)]]></search>
+            <add position="replace"><![CDATA[MiwoShop::get('router')->route(str_replace('{page}', 1, $this->url))]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[str_replace('{page}', $i, $this->url)]]></search>
+            <add position="replace"><![CDATA[MiwoShop::get('router')->route(str_replace('{page}', $i, $this->url))]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[str_replace('{page}', $page + 1, $this->url)]]></search>
+            <add position="replace"><![CDATA[MiwoShop::get('router')->route(str_replace('{page}', $page + 1, $this->url))]]></add>
+        </operation>
+		<operation error="skip">
+            <search><![CDATA[str_replace('{page}', $page - 1, $this->url)]]></search>
+            <add position="replace"><![CDATA[MiwoShop::get('router')->route(str_replace('{page}', $page - 1, $this->url))]]></add>
+        </operation>
+		<operation error="skip">
+            <search><![CDATA[str_replace('{page}', $num_pages, $this->url)]]></search>
+            <add position="replace"><![CDATA[MiwoShop::get('router')->route(str_replace('{page}', $num_pages, $this->url))]]></add>
+        </operation>
+    </file>
+
+    <file  path="system/library/response.php">
+        <operation error="skip">
+            <search><![CDATA[public function redirect($url, $status = 302) {]]></search>
+            <add position="after"><![CDATA[		        #miwoshop-start
+        if (substr($url, 0, 10) == 'index.php?') {
+		    $url = MiwoShop::get('router')->route($url); 
+        }
+        #miwoshop-finish    
+           ]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[if (isset($_SERVER['HTTP_ACCEPT_ENCODING']) && (strpos($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip') !== false)) {]]></search>
+            <add position="replace"><![CDATA[if (isset($_SERVER['HTTP_ACCEPT_ENCODING']) && strpos($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip')) {]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[if (isset($_SERVER['HTTP_ACCEPT_ENCODING']) && (strpos($_SERVER['HTTP_ACCEPT_ENCODING'], 'x-gzip') !== false)) {]]></search>
+            <add position="replace"><![CDATA[if (isset($_SERVER['HTTP_ACCEPT_ENCODING']) && strpos($_SERVER['HTTP_ACCEPT_ENCODING'], 'x-gzip')) {]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[return gzencode($data, (int)$level);]]></search>
+            <add position="replace"><![CDATA[$gzdata = gzencode($data, (int)$level);
+           return $gzdata;]]></add>
+        </operation>
+    </file>
+
+    <file  path="system/library/request.php">
+        <operation error="skip">
+            <search><![CDATA[public function clean($data) {]]></search>
+            <add position="before"><![CDATA[	public function runFirewall($config) {
+	    $config_miwoshop = $config->get('config_miwoshop');
+
+		$this->checkSecurity($config_miwoshop, $this->get, 'get');
+		$this->checkSecurity($config_miwoshop, $this->post, 'post');
+	}
+
+	public function checkSecurity($config, $data, $request) {
+		$uri = urldecode(http_build_query($data));
+
+		if (($config['firewall_lfi'] == $request) or ($config['firewall_lfi'] == 'both')) {
+			$this->_checkLFI($uri);
+		}
+
+		if (($config['firewall_rfi'] == $request) or ($config['firewall_rfi'] == 'both')) {
+			$this->_checkRFI($uri);
+		}
+
+		if (($config['firewall_sql'] == $request) or ($config['firewall_sql'] == 'both')) {
+			$this->_checkSQL($uri);
+		}
+
+		if (($config['firewall_xss'] == $request) or ($config['firewall_xss'] == 'both')) {
+			$this->_checkXSS($uri);
+		}
+	}
+
+	public function _checkLFI($uri) {
+		if (preg_match('#\.\/#is', $uri, $match)) {
+			die('LFI attack attempt.');
+		}
+	}
+
+	public function _checkRFI($uri) {
+		static $exceptions;
+
+		if (!is_array($exceptions)) {
+			$exceptions = array();
+
+			// attempt to remove instances of our website from the URL...
+			$domain = MUri::getInstance()->getHost();
+			$exceptions[] = 'http://'.$domain;
+			$exceptions[] = 'https://'.$domain;
+
+			// also remove blank entries that do not pose a threat
+			$exceptions[] = 'http://&';
+			$exceptions[] = 'https://&';
+		}
+
+		$uri = str_replace($exceptions, '', $uri);
+
+		if (preg_match('#=https?:\/\/.*#is', $uri, $match)) {
+			die('RFI attack attempt.');
+		}
+	}
+
+	public function _checkSQL($uri) {
+		if (preg_match('#[\d\W](union select|union join|union distinct)[\d\W]#is', $uri, $match)) {
+			die('SQL Injection attack attempt.');
+		}
+
+		// check for SQL operations with DB_PREFIX in the URI
+		if (preg_match('#[\d\W](union|union select|insert|from|where|concat|into|cast|truncate|select|delete|having)[\d\W]#is', $uri, $match) && preg_match('/'.preg_quote(DB_PREFIX).'/', $uri, $match)) {
+			die('SQL Injection attack attempt.');
+		}
+	}
+
+	public function _checkXSS($uri) {
+		if (preg_match('#<[^>]*\w*\"?[^>]*>#is', $uri, $match)) {
+			die('XSS attack attempt.');
+		}
+	}
+	]]></add>
+        </operation>
+    </file>
+
+    <file  path="system/library/document.php">
+        <operation error="skip">
+            <search><![CDATA[public function addLink($href, $rel) {]]></search>
+            <add position="replace" offset="5"><![CDATA[public function addLink($href, $rel) {
+		if ($rel == 'canonical') {
+			$document =& MFactory::getDocument();
+
+			$document->addHeadLink($href, 'canonical', 'rel');
+		} else {
+			$this->links[$href] = array(
+				'href' => $href,
+				'rel'  => $rel
+			);
+		}
+	}]]></add>
+        </operation>
+    </file>
+	
+	<file  path="admin/view/template/setting/setting.tpl">
+        <operation error="skip">
+            <search><![CDATA[<label class="col-sm-2 control-label"><?php echo $entry_error_display; ?></label>]]></search>
+            <add position="replace" offset="20"><![CDATA[]]></add>
+        </operation>
+    </file>
+
+</modification>

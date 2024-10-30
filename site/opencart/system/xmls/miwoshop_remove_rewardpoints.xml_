@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modification>
+    <name>Removes Reward Points</name>
+    <code>miwoshop_remove_rewardpoints</code>
+    <version>1.0.0</version>
+    <link>http://www.miwisoft.com</link>
+    <author>Miwisoft LLC</author>
+
+    <file path="catalog/view/theme/*/template/product/product.tpl">
+        <operation error="log">
+            <search><![CDATA[<li><?php echo $text_reward; ?> <?php echo $reward; ?></li>]]></search>
+            <add position="replace"><![CDATA[]]></add>
+        </operation>
+    </file>
+
+	<file path="catalog/view/theme/*/template/account/account.tpl">
+        <operation error="log">
+            <search><![CDATA[<li><a href="<?php echo $reward; ?>"><?php echo $text_reward; ?></a></li>]]></search>
+            <add position="replace"><![CDATA[]]></add>
+        </operation>
+    </file>
+
+	<file path="catalog/view/theme/*/template/module/account.tpl">
+        <operation error="log">
+            <search><![CDATA[<a href="<?php echo $reward; ?>" class="list-group-item"><?php echo $text_reward; ?></a>]]></search>
+            <add position="replace"><![CDATA[]]></add>
+        </operation>
+    </file>
+
+	<file path="catalog/view/theme/*/template/checkout/cart.tpl">
+        <operation error="log">
+            <search><![CDATA[<small><?php echo $product['reward']; ?></small>]]></search>
+            <add position="replace"><![CDATA[]]></add>
+        </operation>
+        <operation error="log">
+            <search><![CDATA[<?php echo $reward; ?>]]></search>
+            <add position="replace"><![CDATA[]]></add>
+        </operation>
+    </file>
+</modification>

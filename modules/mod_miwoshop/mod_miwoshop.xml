@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="2.5.0" type="module" client="site" method="upgrade">
+	<name>MiwoShop - All-in-One</name>
+	<author>Miwisoft LLC</author>
+	<creationDate>October 2012</creationDate>
+	<copyright>Copyright (C) Miwisoft LLC, miwisoft.com</copyright>
+	<license>GNU/GPL, http://www.gnu.org/licenses/gpl-2.0.html</license>
+	<authorEmail>info@miwisoft.com</authorEmail>
+	<authorUrl>http://miwisoft.com</authorUrl>
+	<version>1.0.0</version>
+	<description>MiwoShop All-in-One Module</description>
+	
+	<files>
+		<filename module="mod_miwoshop">index.html</filename>
+		<filename module="mod_miwoshop">mod_miwoshop.php</filename>
+	</files>
+
+	<config>
+		<fields name="params" addfieldpath="/miwoshop/site/miwoshop/elements">
+			<fieldset name="basic">
+				<field name="moduleclass_sfx" type="text" default="" label="Module Class Suffix" description="Module Suffix" />
+                <field name="module" type="miwoshopmodule" default="miwoshopcart" label="Module" description="Module" />
+                <field name="layout_id" type="miwoshoplayout" default="12" label="Layout" description="Layout" />
+			</fieldset>
+		</fields>
+	</config>
+</extension>

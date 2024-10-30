@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="component" version="2.5" method="upgrade">
+	<name>COM_MIWOSHOP</name>
+	<author>Miwisoft</author>
+	<creationDate>May 2016</creationDate>
+	<authorEmail>info@miwisoft.com</authorEmail>
+	<authorUrl>http://miwisoft.com</authorUrl>
+	<copyright>2009-2016 Miwisoft</copyright>
+	<license>GNU/GPL, http://www.gnu.org/licenses/gpl-2.0.html</license>
+	<version>3.1.0</version>
+	<description>MiwoShop is a powerful and turn-key ready shopping cart component that is designed feature rich and user friendly for Wordpress.</description> 
+	
+	<languages folder="languages/site">
+		<language tag="en-GB">en-GB/en-GB.com_miwoshop.ini</language>
+	</languages>
+	
+	<files folder="site">
+		<filename>index.html</filename>
+		<filename>miwoshop.php</filename>
+		<filename>router.php</filename>
+		<folder>assets</folder>
+		<folder>miwoshop</folder>
+		<folder>views</folder>
+	</files>
+	
+	<administration>
+		<menu img="components/com_miwoshop/assets/images/icon-16-miwoshop.png">COM_MIWOSHOP</menu>
+		<submenu>
+	    	<menu link="option=com_miwoshop" img="components/com_miwoshop/assets/images/icon-16-miwoshop.png">COM_MIWOSHOP_DASHBOARD</menu>
+	    	<menu link="option=com_miwoshop&amp;route=setting/store" img="components/com_miwoshop/assets/images/icon-16-miwoshop-settings.png">COM_MIWOSHOP_SETTINGS</menu>
+	    	<menu link="option=com_miwoshop&amp;route=catalog/category" img="components/com_miwoshop/assets/images/icon-16-miwoshop-categories.png">COM_MIWOSHOP_CATEGORIES</menu>
+	      	<menu link="option=com_miwoshop&amp;route=catalog/product" img="components/com_miwoshop/assets/images/icon-16-miwoshop-products.png">COM_MIWOSHOP_PRODUCTS</menu>
+			<menu link="option=com_miwoshop&amp;route=sale/coupon" img="components/com_miwoshop/assets/images/icon-16-miwoshop-coupons.png">COM_MIWOSHOP_COUPONS</menu>
+	      	<menu link="option=com_miwoshop&amp;route=sale/customer" img="components/com_miwoshop/assets/images/icon-16-miwoshop-customers.png">COM_MIWOSHOP_CUSTOMERS</menu>
+			<menu link="option=com_miwoshop&amp;route=sale/order" img="components/com_miwoshop/assets/images/icon-16-miwoshop-orders.png">COM_MIWOSHOP_ORDERS</menu>
+	      	<menu link="option=com_miwoshop&amp;route=sale/affiliate" img="components/com_miwoshop/assets/images/icon-16-miwoshop-affiliates.png">COM_MIWOSHOP_AFFILIATES</menu>
+	      	<menu link="option=com_miwoshop&amp;route=sale/contact" img="components/com_miwoshop/assets/images/icon-16-miwoshop-mailing.png">COM_MIWOSHOP_MAILING</menu>
+	      	<menu link="option=com_miwoshop&amp;route=common/upgrade" img="components/com_miwoshop/assets/images/icon-16-miwoshop-upgrade.png">COM_MIWOSHOP_UPGRADE</menu>
+	      	<menu link="option=com_miwoshop&amp;route=common/support" img="components/com_miwoshop/assets/images/icon-16-miwoshop-support.png">COM_MIWOSHOP_SUPPORT</menu>
+	    </submenu>
+		<files folder="admin">
+			<filename>access.xml</filename>
+			<filename>config.xml</filename>
+			<filename>install.sql</filename>
+			<filename>index.html</filename>
+			<filename>miwoshop.php</filename>
+			<folder>assets</folder>
+		</files>
+		<languages folder="languages/admin">
+			<language tag="en-GB">en-GB/en-GB.com_miwoshop.ini</language>
+			<language tag="en-GB">en-GB/en-GB.com_miwoshop.old.ini</language>
+			<language tag="en-GB">en-GB/en-GB.com_miwoshop.sys.ini</language>
+		</languages>
+	</administration>
+	
+	<scriptfile>script.php</scriptfile>
+</extension>

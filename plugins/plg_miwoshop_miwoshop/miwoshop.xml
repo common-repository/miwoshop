@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="2.5.0" type="plugin" group="miwoshop" method="upgrade">
+	<name>MiwoShop - MiwoShop Customer Group</name>
+	<author>Miwisoft LLC</author>
+	<creationDate>March 2013</creationDate>
+	<copyright>Copyright (C) Miwisoft LLC, miwisoft.com</copyright>
+	<license>GNU/GPL, http://www.gnu.org/licenses/gpl-2.0.html</license>
+	<authorEmail>info@miwisoft.com</authorEmail>
+	<authorUrl>http://miwisoft.com</authorUrl>
+	<version>1.0.0</version>
+	<description>MiwoShop Customer Group integration for MiwoShop.</description>
+	<files>
+		<filename plugin="miwoshop">miwoshop.php</filename>
+	</files>
+</extension>

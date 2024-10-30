@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<metadata>
+	<layout title="Category">
+		<message>
+			<![CDATA[This layout will display the products of the selected category.]]>
+		</message>
+	</layout>
+	<state>
+		<name>MiwoShop: Category</name>
+		<description>This layout will display the products of the selected category.</description>
+		<url addpath="/miwoshop/site/miwoshop/elements">
+            <field name="path" type="miwoshopcategory" default="" label="Select Category" description="Displays the products of the selected category."/>
+		</url>
+		<params addpath="/miwoshop/site/miwoshop/elements">
+			<param name="miwoshop_store_id" type="miwoshopstore" default="" label="Select Store" description="Select the proper store for this page." />
+		</params>
+	</state>
+	<fields name="request">
+		<fieldset name="request" label="MiwoShop: Category" addfieldpath="/miwoshop/site/miwoshop/elements">
+            <field name="path" type="miwoshopcategory" default="" label="Select Category" description="Displays the products of the selected category."/>
+        </fieldset>
+    </fields>
+	<fields name="params">
+		<fieldset name="basic" label="MiwoShop: Store" addfieldpath="/miwoshop/site/miwoshop/elements">
+            <field name="miwoshop_store_id" type="miwoshopstore" default="" label="Select Store" description="Select the proper store for this page." />
+        </fieldset>
+    </fields>
+</metadata>

@@ -1,0 +1,805 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modification>
+    <name>Front Modifications</name>
+    <code>miwoshop_catalog</code>
+    <version>1.0.0</version>
+    <link>http://www.miwisoft.com</link>
+    <author>Miwisoft LLC</author>
+
+    <file path="catalog/controller/account/logout.php">
+        <operation error="skip">
+            <search><![CDATA[$this->customer->logout();]]></search>
+            <add position="after"><![CDATA[
+			MiwoShop::get('user')->logoutJFromO();
+			]]></add>
+        </operation>
+    </file>
+
+    <file path="catalog/controller/account/account.php">
+        <operation error="log" >
+            <search>
+                <![CDATA[$data['newsletter'] = $this->url->link('account/newsletter', '', 'SSL');]]>
+            </search>
+            <add position="after"><![CDATA[$data['logout'] = $this->url->link('account/logout', '', 'SSL');]]></add>
+        </operation>
+        <operation error="log" >
+            <search>
+                <![CDATA[$data['text_newsletter'] = $this->language->get('text_newsletter');]]>
+            </search>
+            <add position="after"><![CDATA[$data['text_logout'] = $this->language->get('text_logout');]]></add>
+        </operation>
+    </file>
+
+    <file path="catalog/controller/account/register.php">
+        <operation error="skip">
+            <search><![CDATA[information_id=]]></search>
+            <add position="replace"><![CDATA[format=raw&tmpl=component&information_id=]]></add>
+        </operation>
+        <!-- zone_id is numeric control start -->
+        <operation error="skip">
+            <search><![CDATA[if (!isset($this->request->post['zone_id']) || $this->request->post['zone_id'] == '') {]]></search>
+            <add position="replace"><![CDATA[if (!isset($this->request->post['zone_id']) || $this->request->post['zone_id'] == '' || !is_numeric($this->request->post['zone_id'])) {]]></add>
+        </operation>
+        <!-- zone_id is numeric control finish -->
+
+        <!-- country_id is numeric control start -->
+        <operation error="skip">
+            <search><![CDATA[if (!isset($this->request->post['country_id']) || $this->request->post['country_id'] == '') {]]></search>
+            <add position="replace"><![CDATA[if (!isset($this->request->post['country_id']) || $this->request->post['country_id'] == '' || !is_numeric($this->request->post['country_id'])) {]]></add>
+        </operation>
+        <!-- country_id is numeric control finish -->
+    </file>
+
+    <!-- zone_id is numeric control start -->
+    <file path="catalog/controller/account/address.php">
+        <operation error="skip">
+            <search><![CDATA[if (!isset($this->request->post['zone_id']) || $this->request->post['zone_id'] == '') {]]></search>
+            <add position="replace"><![CDATA[if (!isset($this->request->post['zone_id']) || $this->request->post['zone_id'] == '' || !is_numeric($this->request->post['zone_id'])) {]]></add>
+        </operation>
+    </file>
+    <!-- zone_id is numeric control finish -->
+
+    <file path="catalog/controller/affiliate/register.php">
+        <operation error="skip">
+            <search><![CDATA[information_id=]]></search>
+            <add position="replace"><![CDATA[format=raw&tmpl=component&information_id=]]></add>
+        </operation>
+        <!-- zone_id is numeric control start -->
+        <operation error="skip">
+            <search><![CDATA[if (!isset($this->request->post['zone_id']) || $this->request->post['zone_id'] == '') {]]></search>
+            <add position="replace"><![CDATA[if (!isset($this->request->post['zone_id']) || $this->request->post['zone_id'] == '' || !is_numeric($this->request->post['zone_id'])) {]]></add>
+        </operation>
+        <!-- zone_id is numeric control finish -->
+
+        <!-- country_id is numeric control start -->
+        <operation error="skip">
+            <search><![CDATA[if (!isset($this->request->post['country_id']) || $this->request->post['country_id'] == '') {]]></search>
+            <add position="replace"><![CDATA[if (!isset($this->request->post['country_id']) || $this->request->post['country_id'] == '' || !is_numeric($this->request->post['country_id'])) {]]></add>
+        </operation>
+        <!-- country_id is numeric control finish -->
+    </file>
+
+    <file path="catalog/controller/affiliate/edit.php">
+        <!-- zone_id is numeric control start -->
+        <operation error="skip">
+            <search><![CDATA[if (!isset($this->request->post['zone_id']) || $this->request->post['zone_id'] == '') {]]></search>
+            <add position="replace"><![CDATA[if (!isset($this->request->post['zone_id']) || $this->request->post['zone_id'] == '' || !is_numeric($this->request->post['zone_id'])) {]]></add>
+        </operation>
+        <!-- zone_id is numeric control finish -->
+    </file>
+
+    <file path="catalog/controller/api/login.php" >
+        <operation error="log">
+            <search  miwomod="true"><![CDATA[$json['cookie'] = $this->session->getId();]]></search>
+            <add position="replace"><![CDATA[            #miwoshop-start
+            $json['cookie']['id'] = $this->session->getId();
+            $json['cookie']['name'] = session_name();
+            #miwoshop-end]]></add>
+        </operation>
+    </file>
+    <file path="catalog/controller/api/cart.php" >
+        <operation error="log">
+            <search><![CDATA[if (isset($this->request->post['option'])) {]]></search>
+            <add position="replace"><![CDATA[                    if (isset($this->request->post['option_oc'])) { #miwoshop-start]]></add>
+        </operation>
+        <operation error="log">
+            <search><![CDATA[$option = array_filter($this->request->post['option']);]]></search>
+            <add position="replace"><![CDATA[                        $option = array_filter($this->request->post['option_oc']); #miwoshop-start]]></add>
+        </operation>
+		<operation error="log">
+            <search><![CDATA[if (isset($this->request->post['product'])) {]]></search>
+            <add position="before"><![CDATA[            if (isset($this->request->get['store_id'])) {
+                $this->config->set('config_store_id', $this->request->get['store_id']);
+            }]]></add>
+        </operation>
+    </file>
+
+    <file path="catalog/controller/checkout/cart.php" >
+        <operation error="log">
+            <search><![CDATA[$json['total'] = sprintf($this->language->get('text_items'),]]></search>
+            <add position="before"><![CDATA[            $json['location'] = $this->url->link('checkout/cart', '', 'SSL'); #miwoshop]]></add>
+        </operation>
+        <operation error="log">
+            <search><![CDATA[if (isset($this->request->post['option'])) {]]></search>
+            <add position="replace"><![CDATA[            if (isset($this->request->post['option_oc'])) { #miwoshop]]></add>
+        </operation>
+        <operation error="log">
+            <search><![CDATA[$option = array_filter($this->request->post['option']);]]></search>
+            <add position="replace"><![CDATA[                $option = array_filter($this->request->post['option_oc']); #miwoshop]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[
+            	public function edit() {
+            ]]></search>
+            <add position="before"><![CDATA[
+    public function addExternal(){
+        $this->language->load('checkout/cart');
+
+        $json = array();
+
+        $_id = MRequest::getInt('product_id');
+        $_quantity = MRequest::getInt('quantity');
+        $_price = MRequest::getString('price');
+
+        if (!empty($_id) && !empty($_quantity)){
+            $this->request->post['product_id'] = $_id;
+            $this->request->post['quantity'] = $_quantity;
+        }
+
+        if (isset($this->request->post['product_id'])) {
+            $product_id = $this->request->post['product_id'];
+        } else {
+            $product_id = 0;
+        }
+
+        $this->load->model('catalog/product');
+
+        $product_info = $this->model_catalog_product->getProduct($product_id);
+
+        if ($product_info) {
+            if (isset($this->request->post['quantity'])) {
+                $quantity = $this->request->post['quantity'];
+            } else {
+                $quantity = 1;
+            }
+
+            if(!(doubleval($_price) < doubleval($product_info['price']))) {
+                $this->request->post['option_oc']['external'] = $_price;
+            }
+
+            if (isset($this->request->post['option_oc'])) {
+                $option = array_filter($this->request->post['option_oc']);
+            } else {
+                $option = array();
+            }
+
+            $this->cart->add($this->request->post['product_id'], $quantity, $option);
+        }
+
+		$this->response->redirect(MiwoShop::get('router')->route('index.php?route=checkout/cart'));
+    }
+    ]]></add>
+        </operation>
+    </file>
+
+    <file path="catalog/controller/checkout/guest.php">
+        <!-- zone_id is numeric control start -->
+        <operation error="skip">
+            <search><![CDATA[if (!isset($this->request->post['zone_id']) || $this->request->post['zone_id'] == '') {]]></search>
+            <add position="replace"><![CDATA[if (!isset($this->request->post['zone_id']) || $this->request->post['zone_id'] == '' || !is_numeric($this->request->post['zone_id'])) {]]></add>
+        </operation>
+        <!-- zone_id is numeric control finish -->
+    </file>
+
+    <file path="catalog/controller/checkout/guest_shipping.php">
+        <!-- zone_id is numeric control start -->
+        <operation error="skip">
+            <search><![CDATA[if (!isset($this->request->post['zone_id']) || $this->request->post['zone_id'] == '') {]]></search>
+            <add position="replace"><![CDATA[if (!isset($this->request->post['zone_id']) || $this->request->post['zone_id'] == '' || !is_numeric($this->request->post['zone_id'])) {]]></add>
+        </operation>
+        <!-- zone_id is numeric control finish -->
+    </file>
+
+    <file path="catalog/controller/checkout/payment_address.php">
+        <!-- zone_id is numeric control start -->
+        <operation error="skip">
+            <search><![CDATA[if (!isset($this->request->post['zone_id']) || $this->request->post['zone_id'] == '') {]]></search>
+            <add position="replace"><![CDATA[if (!isset($this->request->post['zone_id']) || $this->request->post['zone_id'] == '' || !is_numeric($this->request->post['zone_id'])) {]]></add>
+        </operation>
+        <!-- zone_id is numeric control finish -->
+    </file>
+
+    <file path="catalog/controller/checkout/register.php">
+        <operation error="skip">
+            <search><![CDATA[information_id=]]></search>
+            <add position="replace"><![CDATA[format=raw&tmpl=component&information_id=]]></add>
+        </operation>
+        <!-- zone_id is numeric control start -->
+        <operation error="skip">
+            <search><![CDATA[if (!isset($this->request->post['zone_id']) || $this->request->post['zone_id'] == '') {]]></search>
+            <add position="replace"><![CDATA[if (!isset($this->request->post['zone_id']) || $this->request->post['zone_id'] == '' || !is_numeric($this->request->post['zone_id'])) {]]></add>
+        </operation>
+        <!-- zone_id is numeric control finish -->
+    </file>
+
+    <file path="catalog/controller/checkout/payment_method.php">
+        <operation error="skip">
+            <search><![CDATA[information_id=]]></search>
+            <add position="replace"><![CDATA[format=raw&tmpl=component&information_id=]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[$this->response->setOutput(json_encode($json));]]></search>
+            <add position="after" offset="1"><![CDATA[
+    public function setPaymentMethods($payment_address, $total) {
+		/*if (!empty($this->session->data['payment_methods'])) {
+			return;
+		}*/
+
+        $method_data = array();
+
+        $this->load->model('extension/extension');
+
+        $results = $this->model_extension_extension->getExtensions('payment');
+
+        $recurring = $this->cart->hasRecurringProducts();
+
+        foreach ($results as $result) {
+            if ($this->config->get($result['code'] . '_status')) {
+                $this->load->model('payment/' . $result['code']);
+
+                $method = $this->{'model_payment_' . $result['code']}->getMethod($this->session->data['payment_address'], $total);
+
+                if ($method) {
+                    if ($recurring) {
+                        if (method_exists($this->{'model_payment_' . $result['code']}, 'recurringPayments') && $this->{'model_payment_' . $result['code']}->recurringPayments()) {
+                            $method_data[$result['code']] = $method;
+                        }
+                    } else {
+                        $method_data[$result['code']] = $method;
+                    }
+                }
+            }
+        }
+
+        $sort_order = array();
+
+        foreach ($method_data as $key => $value) {
+            $sort_order[$key] = $value['sort_order'];
+        }
+
+        array_multisort($sort_order, SORT_ASC, $method_data);
+
+        $this->session->data['payment_methods'] = $method_data;
+	}
+
+	public function getTotal($payment_address){
+        // Totals
+        $total_data = array();
+        $total = 0;
+        $taxes = $this->cart->getTaxes();
+
+        $this->load->model('extension/extension');
+
+        $sort_order = array();
+
+        $results = $this->model_extension_extension->getExtensions('total');
+
+        foreach ($results as $key => $value) {
+            $sort_order[$key] = $this->config->get($value['code'] . '_sort_order');
+        }
+
+        array_multisort($sort_order, SORT_ASC, $results);
+
+        foreach ($results as $result) {
+            if ($this->config->get($result['code'] . '_status')) {
+                $this->load->model('total/' . $result['code']);
+
+                $this->{'model_total_' . $result['code']}->getTotal($total_data, $total, $taxes);
+            }
+        }
+
+        return $total;
+    }
+            ]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[if (!isset($this->request->post['payment_method'])) {]]></search>
+            <add position="before"><![CDATA[
+            $total = $this->getTotal($this->session->data['payment_address']);
+            $this->setPaymentMethods($this->session->data['payment_address'], $total);
+            ]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[if (isset($this->session->data['payment_address'])) {]]></search>
+            <add position="replace" offset="62"><![CDATA[
+        $total = 0;
+        if (isset($this->session->data['payment_address'])) {
+            $total = $this->getTotal($this->session->data['payment_address']);
+        }
+
+        $this->setPaymentMethods($this->session->data['payment_address'], $total);
+            ]]></add>
+        </operation>
+    </file>
+
+    <file path="catalog/controller/checkout/shipping_method.php">
+        <operation error="skip">
+            <search><![CDATA[$this->response->setOutput(json_encode($json));]]></search>
+            <add position="after" offset="1"><![CDATA[
+    public function setShippingMethods($shipping_address) {
+		$method_data = array();
+
+        $this->load->model('extension/extension');
+
+        $results = $this->model_extension_extension->getExtensions('shipping');
+
+        foreach ($results as $result) {
+            if ($this->config->get($result['code'] . '_status')) {
+                $this->load->model('shipping/' . $result['code']);
+
+                $quote = $this->{'model_shipping_' . $result['code']}->getQuote($shipping_address);
+
+                if ($quote) {
+                    $method_data[$result['code']] = array(
+                        'title'      => $quote['title'],
+                        'quote'      => $quote['quote'],
+                        'sort_order' => $quote['sort_order'],
+                        'error'      => $quote['error']
+                    );
+                }
+            }
+        }
+
+        $sort_order = array();
+
+        foreach ($method_data as $key => $value) {
+            $sort_order[$key] = $value['sort_order'];
+        }
+
+        array_multisort($sort_order, SORT_ASC, $method_data);
+
+        $this->session->data['shipping_methods'] = $method_data;
+	}
+    ]]></add>
+        </operation>
+
+        <operation error="skip">
+            <search><![CDATA[if (!isset($this->request->post['shipping_method'])) {]]></search>
+            <add position="before"><![CDATA[
+            $this->setShippingMethods($this->session->data['shipping_address']);
+            ]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[if (isset($this->session->data['shipping_address'])) {]]></search>
+            <add position="replace" offset="34"><![CDATA[
+        $this->setShippingMethods($this->session->data['shipping_address']);
+            ]]></add>
+        </operation>
+    </file>
+
+    <file path="catalog/controller/checkout/shipping_address.php">
+        <!-- zone_id is numeric control start -->
+        <operation error="skip">
+            <search><![CDATA[if (!isset($this->request->post['zone_id']) || $this->request->post['zone_id'] == '') {]]></search>
+            <add position="replace"><![CDATA[if (!isset($this->request->post['zone_id']) || $this->request->post['zone_id'] == '' || !is_numeric($this->request->post['zone_id'])) {]]></add>
+        </operation>
+        <!-- zone_id is numeric control finish -->
+    </file>
+
+    <file path="catalog/controller/common/header.php" >
+        <operation error="log">
+            <search><![CDATA[$server = $this->config->get('config_ssl');]]></search>
+            <add position="replace"><![CDATA[           $server = HTTPS_IMAGE; #miwoshop]]></add>
+        </operation>
+        <operation error="log">
+            <search><![CDATA[$server = $this->config->get('config_url');]]></search>
+            <add position="replace"><![CDATA[           $server = HTTP_IMAGE; #miwoshop]]></add>
+        </operation>
+        <operation error="log">
+            <search><![CDATA[if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/common/header.tpl')) {]]></search>
+            <add position="before"><![CDATA[
+        #miwoshop-start
+        if (MRequest::getCmd('option') == 'com_miwoshop') {
+            $document = MFactory::getDocument();
+
+            $title = html_entity_decode($data['title']);
+
+
+            $mainframe = MFactory::getApplication();
+
+            if ($mainframe->getCfg('sitename_pagetitles', 0) == 1) {
+                $title = MText::sprintf('MPAGETITLE', $mainframe->getCfg('sitename'), $title);
+            }
+            elseif ($mainframe->getCfg('sitename_pagetitles', 0) == 2) {
+                $title = MText::sprintf('MPAGETITLE', $title, $mainframe->getCfg('sitename'));
+            }
+
+            $route = MRequest::getString('route', '');
+            if(!empty($route) and ($route == 'product/popular' or $route == 'product/latest' or $route == 'product/special' or $route == 'product/bestseller' or $route == 'product/featured')) {
+                $active_menu  = $mainframe->getMenu()->getActive();
+
+                if(!empty($active_menu)) {
+                    $page_title = $active_menu->params->get('page_title');
+
+                    if(!empty($page_title)){
+                        $title = $page_title;
+                    }
+                    else {
+                        $title = $active_menu->title;
+                    }
+                }
+                else{
+                    $title = str_replace('/', ' ', $route);
+                    $title = ucfirst($title);
+                }
+            }
+
+            $document->setTitle($title);
+            $document->setMetaData('title', $title);
+            $document->setMetaData('description', html_entity_decode($data['description']));
+            $document->setMetaData('keywords', html_entity_decode($data['keywords']));
+
+            $document->setBase(MiwoShop::get()->getFullUrl());
+        }
+        #miwoshop-end
+            ]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[$this->load->model('catalog/category');]]></search>
+            <add position="before"><![CDATA[		if (MiwoShop::get('base')->getConfig()->get('show_cats_menu', 0) == 1) {]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[$data['language'] = $this->load->controller('common/language');]]></search>
+            <add position="before" offset="1"><![CDATA[		}]]></add>
+        </operation>
+    </file>
+
+    <file path="catalog/controller/feed/*.php">
+        <operation error="skip">
+            <search><![CDATA[index.php?route=]]></search>
+            <add position="replace"><![CDATA[index.php?option=com_miwoshop&route=]]></add>
+        </operation>
+    </file>
+
+    <file path="catalog/controller/module/*.php">
+        <operation error="skip">
+            <search><![CDATA[protected function index]]></search>
+            <add position="replace"><![CDATA[public function index]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[private function index]]></search>
+            <add position="replace"><![CDATA[public function index]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[index.php?route=]]></search>
+            <add position="replace"><![CDATA[index.php?option=com_miwoshop&route=]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[$this->document->addStyle('catalog/view/']]></search>
+            <add position="replace"><![CDATA[MiwoShop::get()->addHeader(MPATH_MIWOSHOP_OC.'/catalog/view/']]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[$this->document->addScript('catalog/view/']]></search>
+            <add position="replace"><![CDATA[$this->document->addScript('/catalog/view/']]></add>
+        </operation>
+    </file>
+
+    <file path="catalog/controller/module/banner.php">
+        <operation error="skip">
+            <search><![CDATA[$result['link']]]></search>
+            <add position="replace"><![CDATA[MiwoShop::get('router')->route(MiwoShop::get()->getFullUrl().$result['link'])]]></add>
+        </operation>
+    </file>
+
+    <file path="catalog/controller/module/category.php">
+        <operation error="skip">
+            <search><![CDATA[$categories = $this->model_catalog_category->getCategories(0);]]></search>
+            <add position="before"><![CDATA[
+    $cache = $this->cache->get('all_categories');
+    $total_category_count = $this->model_catalog_category->getTotalCategories();
+
+    if(!empty($cache['total']) and $total_category_count == $cache['total']) {
+        $data['categories'] = $cache['categories'];
+    } else {
+            ]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA['href'        => $this->url->link('product/category', 'path=' . $category['category_id'])]]></search>
+            <add position="after" offset="2"><![CDATA[
+		$_data['categories'] = $data['categories'];
+        $_data['total'] = $this->model_catalog_category->getTotalCategories();
+
+        $this->cache->set('all_categories', $data['categories']);
+    }
+            ]]></add>
+        </operation>
+    </file>
+
+    <file path="catalog/controller/module/carousel.php">
+        <operation error="skip">
+            <search><![CDATA[$result['link']]]></search>
+            <add position="replace"><![CDATA[MiwoShop::get('router')->route(MiwoShop::get()->getFullUrl().$result['link'])]]></add>
+        </operation>
+    </file>
+
+    <file path="catalog/controller/module/slideshow.php">
+        <operation error="skip">
+            <search><![CDATA[$result['link']]]></search>
+            <add position="replace"><![CDATA[MiwoShop::get('router')->route(MiwoShop::get()->getFullUrl().$result['link'])]]></add>
+        </operation>
+    </file>
+
+    <file path="catalog/controller/module/store.php">
+        <operation error="skip">
+            <search><![CDATA[HTTP_SERVER . 'index.php?option=com_miwoshop&route=common/home&session_id=' . $this->session->getId()]]></search>
+            <add position="replace"><![CDATA[HTTP_SERVER . ltrim(MRoute::_('index.php?option=com_miwoshop&route=common/home&session_id=' . $this->session->getId()), '/')]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[$result['url'] . 'index.php?option=com_miwoshop&route=common/home&session_id=' . $this->session->getId()]]></search>
+            <add position="replace"><![CDATA[$result['url'] . ltrim(MRoute::_('index.php?option=com_miwoshop&route=common/home&session_id=' . $this->session->getId()), '/')]]></add>
+        </operation>
+    </file>
+
+    <file path="catalog/controller/payment/*.php">
+        <operation error="skip">
+            <search><![CDATA[index.php?route=]]></search>
+            <add position="replace"><![CDATA[index.php?option=com_miwoshop&route=]]></add>
+        </operation>
+    </file>
+
+    <file path="catalog/controller/payment/skrill.php">
+        <operation error="log">
+            <search><![CDATA[$data['logo'] = $this->config->get('config_url') . 'image/' . $this->config->get('config_logo');]]></search>
+            <add position="replace"><![CDATA[$data['logo'] = HTTP_IMAGE . $this->config->get('config_logo');]]></add>
+        </operation>
+    </file>
+
+    <file path="catalog/controller/information/information.php">
+        <operation error="skip">
+            <search index="0"><![CDATA[if (isset($this->request->get['information_id'])) {]]></search>
+            <add position="before"><![CDATA[
+        #miwoshop-start
+        if (empty($this->request->get['information_id'])){
+			if(!empty($_GET['information_id'])){
+				$this->request->get['information_id'] = $_GET['information_id'];
+			}
+			elseif(!empty($_REQUEST['information_id'])){ //joomla3
+				$this->request->get['information_id'] = $_REQUEST['information_id'];
+				$_GET['information_id'] = $_REQUEST['information_id'];
+			}
+		}
+		#miwoshop-end
+            ]]></add>
+        </operation>
+    </file>
+
+    <file path="catalog/controller/product/category.php">
+        <operation error="skip">
+            <search index="0"><![CDATA[if (isset($this->request->get['path'])) {]]></search>
+            <add position="before"><![CDATA[
+        #miwoshop-start
+        if (empty($this->request->get['path'])){
+			if(!empty($_GET['path'])){
+				$this->request->get['path'] = $_GET['path'];
+			}
+			elseif(!empty($_REQUEST['path'])){ //joomla3
+				$this->request->get['path'] = $_REQUEST['path'];
+				$_GET['path'] = $_REQUEST['path'];
+			}
+		}
+		#miwoshop-end
+            ]]></add>
+        </operation>
+    </file>
+
+    <file path="catalog/controller/product/manufacturer.php">
+        <operation error="skip">
+            <search index="0"><![CDATA[if (isset($this->request->get['manufacturer_id'])) {]]></search>
+            <add position="before"><![CDATA[
+        #miwoshop-start
+        if (empty($this->request->get['manufacturer_id'])){
+			if(!empty($_GET['manufacturer_id'])){
+				$this->request->get['manufacturer_id'] = $_GET['manufacturer_id'];
+			}
+			elseif(!empty($_REQUEST['manufacturer_id'])){ //joomla3
+				$this->request->get['manufacturer_id'] = $_REQUEST['manufacturer_id'];
+				$_GET['path'] = $_REQUEST['manufacturer_id'];
+			}
+		}
+		#miwoshop-end
+            ]]></add>
+        </operation>
+    </file>
+
+    <file path="catalog/controller/product/product.php">
+        <operation error="skip">
+            <search><![CDATA[$pagination->url = $this->url->link('product/product/review', 'product_id=' . $this->request->get['product_id']]]></search>
+            <add position="replace"><![CDATA[$pagination->url = $this->url->link('product/product/review', 'format=raw&tmpl=component&product_id=' . $this->request->get['product_id']]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[$data['tab_attribute'] = $this->language->get('tab_attribute');]]></search>
+            <add position="after"><![CDATA[			$data['tab_comments'] = $this->language->get('tab_comments');]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[if (isset($this->request->get['product_id'])) {]]></search>
+            <add position="before"><![CDATA[
+        #miwoshop-start
+		if (empty($this->request->get['product_id'])){
+			if(!empty($_GET['product_id'])){
+				$this->request->get['product_id'] = $_GET['product_id'];
+			}
+			elseif(!empty($_REQUEST['product_id'])){//joomla3
+				$this->request->get['product_id'] = $_REQUEST['product_id'];
+				$_GET['product_id'] = $_REQUEST['product_id'];
+			}
+		}
+		#miwoshop-end
+            ]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[if (empty($this->request->post['rating'])) {]]></search>
+            <add position="replace"><![CDATA[if (empty($this->request->post['rating']) || (int)$this->request->post['rating'] < 1 || (int)$this->request->post['rating'] > 5) {]]></add>
+        </operation>
+    </file>
+    <file path="catalog/controller/api/*.php">
+        <operation error="skip">
+            <search><![CDATA[$this->response->setOutput(json_encode($json));]]></search>
+            <add position="replace"><![CDATA[exit(json_encode($json)); #miwoshop-start]]></add>
+        </operation>
+    </file>
+	
+    <file path="catalog/controller/tool/captcha.php">
+        <operation error="skip">
+            <search><![CDATA[imagedestroy($image);]]></search>
+            <add position="after"><![CDATA[        exit(); #miwoshop-start]]></add>
+        </operation>
+    </file>
+
+    <file path="catalog/language/english/account/account.php">
+        <operation error="log" >
+            <search>
+                <![CDATA[$_['text_my_newsletter'] = 'Newsletter';]]>
+            </search>
+            <add position="after"><![CDATA[$_['text_logout']        = 'Logout';]]></add>
+        </operation>
+    </file>
+
+    <file path="catalog/model/account/customer.php">
+        <operation error="skip">
+            <search><![CDATA[$this->load->language('mail/customer');]]></search>
+            <add position="before"><![CDATA[		MiwoShop::get('user')->createJUserFromO($data, $customer_id);
+   		]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[$this->db->query("UPDATE " . DB_PREFIX . "customer SET firstname = '" . $this->db->escape($data['firstname']) . "', lastname = '" . $this->db->escape($data['lastname']) . "', email = '" . $this->db->escape($data['email']) . "', telephone = '" . $this->db->escape($data['telephone']) . "', fax = '" . $this->db->escape($data['fax']) . "', custom_field = '" . $this->db->escape(isset($data['custom_field']) ? serialize($data['custom_field']) : '') . "' WHERE customer_id = '" . (int)$customer_id . "'");]]></search>
+            <add position="after"><![CDATA[
+   		MiwoShop::get('user')->updateJUserFromO(MiwoShop::get('user')->getJUserIdFromOCustomer((int)$customer_id), $data, (int)$customer_id);]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[public function editPassword($email, $password) {]]></search>
+            <add position="after"><![CDATA[   		$password = MiwoShop::get('user')->updateJUserPasswordFromO($email, $password);
+   			]]></add>
+        </operation>
+        <operation error="log">
+            <search><![CDATA[$this->db->query("INSERT INTO " . DB_PREFIX . "customer SET customer_group_id = '" . (int)$customer_group_id . "', store_id = '" . (int)$this->config->get('config_store_id') . "', firstname = '" . $this->db->escape($data['firstname']) . "', lastname = '" . $this->db->escape($data['lastname']) . "', email = '" . $this->db->escape($data['email']) . "', telephone = '" . $this->db->escape($data['telephone']) . "', fax = '" . $this->db->escape($data['fax']) . "', custom_field = '" . $this->db->escape(isset($data['custom_field']['account']) ? serialize($data['custom_field']['account']) : '') . "', salt = '" . $this->db->escape($salt = substr(md5(uniqid(rand(), true)), 0, 9)) . "', password = '" . $this->db->escape(sha1($salt . sha1($salt . sha1($data['password'])))) . "', newsletter = '" . (isset($data['newsletter']) ? (int)$data['newsletter'] : 0) . "', ip = '" . $this->db->escape($this->request->server['REMOTE_ADDR']) . "', status = '1', approved = '" . (int)!$customer_group_info['approval'] . "', date_added = NOW()");]]></search>
+            <add position="replace"><![CDATA[        $this->db->query("INSERT INTO " . DB_PREFIX . "customer SET customer_group_id = '" . (int)$customer_group_id . "', store_id = '" . (int)$this->config->get('config_store_id') . "', firstname = '" . $this->db->escape($data['firstname']) . "', lastname = '" . $this->db->escape($data['lastname']) . "', email = '" . $this->db->escape($data['email']) . "', telephone = '" . $this->db->escape($data['telephone']) . "', fax = '" . $this->db->escape($data['fax']) . "', custom_field = '" . $this->db->escape(isset($data['custom_field']['account']) ? serialize($data['custom_field']['account']) : '') . "', salt = '" . $this->db->escape($salt = substr(md5(uniqid(rand(), true)), 0, 9)) . "', password = '" . $this->db->escape(Miwoshop::get('user')->encryptPassword($data['password'])) . "', newsletter = '" . (isset($data['newsletter']) ? (int)$data['newsletter'] : 0) . "', ip = '" . $this->db->escape($this->request->server['REMOTE_ADDR']) . "', status = '1', approved = '" . (int)!$customer_group_info['approval'] . "', date_added = NOW()"); #miwoshop-start]]></add>
+        </operation>
+        <operation error="log">
+            <search><![CDATA[$this->db->query("UPDATE " . DB_PREFIX . "customer SET salt = '" . $this->db->escape($salt = substr(md5(uniqid(rand(), true)), 0, 9)) . "', password = '" . $this->db->escape(sha1($salt . sha1($salt . sha1($password)))) . "' WHERE LOWER(email) = '" . $this->db->escape(utf8_strtolower($email)) . "'");]]></search>
+            <add position="replace"><![CDATA[$this->db->query("UPDATE " . DB_PREFIX . "customer SET salt = '" . $this->db->escape($salt = substr(md5(uniqid(rand(), true)), 0, 9)) . "', password = '" . $this->db->escape($password) . "' WHERE LOWER(email) = '" . $this->db->escape(utf8_strtolower($email)) . "'"); #miwoshop-start]]></add>
+        </operation>
+    </file>
+
+    <file path="catalog/model/catalog/category.php">
+        <operation error="skip">
+            <search><![CDATA[public function getTotalCategoriesByCategoryId($parent_id = 0) {]]></search>
+            <add position="before"><![CDATA[
+	public function getTotalCategories() {
+		$query = $this->db->query("SELECT COUNT(*) AS total FROM " . DB_PREFIX . "category c LEFT JOIN " . DB_PREFIX . "category_to_store c2s ON (c.category_id = c2s.category_id) WHERE c2s.store_id = '" . (int)$this->config->get('config_store_id') . "' AND c.status = '1'");
+		return $query->row['total'];
+	}
+            ]]></add>
+        </operation>
+    </file>
+
+    <file path="catalog/model/checkout/order.php">
+        <operation error="skip">
+            <search><![CDATA[index.php?route=]]></search>
+            <add position="replace"><![CDATA[index.php?option=com_miwoshop&route=]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[$data['logo'] = $this->config->get('config_url') . 'image/' . $this->config->get('config_logo');]]></search>
+            <add position="replace"><![CDATA[$data['logo'] = $this->config->get('config_url') . 'wp-content/plugins/miwoshop/site/opencart/image/' . $this->config->get('config_logo'); #miwoshop-start]]></add>
+        </operation>
+    </file>
+
+    <file path="catalog/model/checkout/voucher.php">
+        <operation error="skip">
+            <search><![CDATA[$data['image'] = $this->config->get('config_url') . 'image/' . $voucher['image'];]]></search>
+            <add position="replace"><![CDATA[$data['image'] = HTTP_IMAGE . $voucher['image'];]]></add>
+        </operation>
+        <operation>
+            <search><![CDATA[$data['store_url'] = $order_info['store_url'];]]></search>
+            <add position="replace"><![CDATA[$data['store_url'] = $order_info['store_url'] . 'index.php?option=com_miwoshop';]]></add>
+        </operation>
+    </file>
+
+    <file name="catalog/model/checkout/coupon.php">
+        <operation error="skip">
+            <search><![CDATA[public function getCoupon($code) {]]></search>
+            <add position="replace"><![CDATA[public function getCoupon($code, $verify = 1) {]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[if ($coupon_query->row['total'] > $this->cart->getSubTotal()) {]]></search>
+            <add position="replace"><![CDATA[if ($verify && $coupon_query->row['total'] > $this->cart->getSubTotal()) {]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[if ($coupon_query->row['uses_total'] > 0 && ($coupon_history_query->row['total'] >= $coupon_query->row['uses_total'])) {]]></search>
+            <add position="replace"><![CDATA[if ($verify && $coupon_query->row['uses_total'] > 0 && ($coupon_history_query->row['total'] >= $coupon_query->row['uses_total'])) {]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[if ($coupon_query->row['logged'] && !$this->customer->getId()) {]]></search>
+            <add position="replace"><![CDATA[if ($verify && $coupon_query->row['logged'] && !$this->customer->getId()) {]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[if ($this->customer->getId()) {]]></search>
+            <add position="replace"><![CDATA[if ($verify && $this->customer->getId()) {]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[if (!$product_data) {]]></search>
+            <add position="replace"><![CDATA[if ($verify && !$product_data) {]]></add>
+        </operation>
+    </file>
+
+    <file path="catalog/model/total/coupon.php">
+        <operation error="skip">
+            <search><![CDATA[$coupon_info = $this->model_checkout_coupon->getCoupon($code);]]></search>
+            <add position="replace"><![CDATA[$coupon_info = $this->model_checkout_coupon->getCoupon($code, 0);]]></add>
+        </operation>
+        <operation error="skip">
+            <search><![CDATA[$total_data[] = array(]]></search>
+            <add position="before"><![CDATA[
+                // If discount greater than total
+                if ($discount_total > $total) {
+                    $discount_total = $total;
+                }
+            ]]></add>
+        </operation>
+    </file>
+
+    <file path="catalog/model/tool/image.php" >
+        <operation error="log">
+            <search><![CDATA[return $this->config->get('config_ssl') . 'image/' . $new_image;]]></search>
+            <add position="replace"><![CDATA[           return HTTPS_IMAGE . $new_image; #miwoshop]]></add>
+        </operation>
+        <operation error="log">
+            <search><![CDATA[return $this->config->get('config_url') . 'image/' . $new_image;]]></search>
+            <add position="replace"><![CDATA[           return HTTP_IMAGE . $new_image; #miwoshop]]></add>
+        </operation>
+    </file>
+	
+    <file path="catalog/model/checkout/order.php">
+        <operation error="skip">
+            <search><![CDATA[index.php?route=]]></search>
+            <add position="replace"><![CDATA[index.php?option=com_miwoshop&route=]]></add>
+        </operation>
+ 
+        <operation error="skip">
+            <search><![CDATA[$this->db->query("DELETE FROM " . DB_PREFIX . "order_total WHERE order_id = '" . (int)$order_id . "'");]]></search>
+            <add position="after"><![CDATA[      $this->cache->delete('product.bestseller'); #miwoshop-start]]></add>
+        </operation>
+    </file>
+	
+	<file path="catalog/controller/payment/twocheckout.php">
+		<operation>
+			<search><![CDATA[$data['ship_street_address'] = $order_info['shipping_address_1'];]]></search>
+			<add position="before"><![CDATA[$data['ship_name'] = $order_info['shipping_firstname'] . ' ' . $order_info['shipping_lastname'];]]></add>
+		</operation>
+	</file>
+	<file path="catalog/view/theme/*/template/payment/twocheckout.tpl">
+		<operation>
+			<search><![CDATA[<input type="hidden" name="ship_country" value="<?php echo $ship_country; ?>" />]]></search>
+			<add position="after"><![CDATA[<input type="hidden" name="ship_name" value="<?php echo $ship_name; ?>" />]]></add>
+		</operation>
+	</file>
+</modification>

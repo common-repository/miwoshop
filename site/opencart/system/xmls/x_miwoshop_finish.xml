@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modification>
+	<name>MiwoShop - Last Changes</name>
+    <code>x_miwoshop_finish</code>
+	<version>1.0.0</version>
+    <link>http://www.miwisoft.com</link>
+    <author>Miwisoft LLC</author>
+	
+	<file path="catalog/controller/*/*.php">
+		<operation error="log">
+			<search regex="true"><![CDATA[~if \(file_exists\(DIR_TEMPLATE \. \$this->config->get\('config_template'\) . '/template/([^)]+)\.tpl'\)\) \{~]]></search>
+			<add position="replace"><![CDATA[if (file_exists(MPATH_WP_CNT.'/themes/'.MiwoShop::getTmpl().'/html/com_miwoshop/$1.tpl')) {
+            $this->response->setOutput($this->load->view('/templates/'.MiwoShop::getTmpl().'/html/com_miwoshop/$1.tpl'));
+        }
+        else if (file_exists(DIR_TEMPLATE . $this->config->get('config_template') . '/template/$1.tpl')) {]]></add>
+		</operation>
+	</file>
+	
+	<file path="system/engine/loader.php">
+        <operation error="log">
+            <search index="1"><![CDATA[if (file_exists($file)) {]]></search>
+            <add position="replace"><![CDATA[#miwoshop-start
+		$dir = DIR_TEMPLATE;
+
+        if(file_exists(MPATH_ROOT . $template)) {
+            $dir = MPATH_ROOT;
+			$file = $dir . $template;
+        }
+
+        if (file_exists($dir . $template)) {
+		#miwoshop-finish]]></add>
+        </operation>
+		
+		<operation error="log">
+            <search><![CDATA[require($file);]]></search>
+            <add position="replace"><![CDATA[require(modification($dir . $this->template)); #miwoshop-start]]></add>
+        </operation>
+		
+		<operation error="log">
+            <search><![CDATA[trigger_error('Error: Could not load template ' . $file . '!');]]></search>
+            <add position="replace"><![CDATA[trigger_error('Error: Could not load template ' . $dir . $template . '!'); #miwoshop-start]]></add>
+        </operation>
+    </file>
+	
+	<file path="admin/view/template/setting/setting.tpl">
+        <operation error="skip">
+            <search index="12"><![CDATA[<div class="form-group">]]></search>
+            <add position="replace" offset="13"><![CDATA[<input type="hidden" name="config_language" value="en" />]]></add>
+        </operation>
+
+		<operation error="skip">
+            <search index="12"><![CDATA[<div class="form-group">]]></search>
+            <add position="replace" offset="13"><![CDATA[<input type="hidden" name="config_language" value="en" />]]></add>
+        </operation>
+
+        <operation error="skip">
+            <search position="replace"><![CDATA[<li><a href="#tab-ftp" data-toggle="tab"><?php echo $tab_ftp; ?></a></li>]]></search>
+            <add><![CDATA[]]></add>
+        </operation><operation error="skip">
+            <search><![CDATA[<div class="tab-pane" id="tab-ftp">]]></search>
+            <add position="replace" offset="66"><![CDATA[]]></add>
+        </operation>
+    </file>
+	
+	<file path="admin/model/tool/backup.php">
+        <operation error="skip">
+            <search><![CDATA[$table_data = array();]]></search>
+            <add position="after"><![CDATA[        $dbprefix = str_replace('#__', MiwoShop::get('base')->getMConfig()->dbprefix, DB_PREFIX);  #miwoshop-start]]></add>
+        </operation>
+		
+        <operation error="skip">
+            <search><![CDATA[$output = '';]]></search>
+            <add position="after"><![CDATA[        $dbprefix = str_replace('#__', MiwoShop::get('base')->getMConfig()->dbprefix, DB_PREFIX);  #miwoshop-start]]></add>
+        </operation>
+		
+        <operation error="skip">
+            <search><![CDATA[if (utf8_substr($result['Tables_in_' . DB_DATABASE], 0, strlen(DB_PREFIX)) == DB_PREFIX) {]]></search>
+            <add position="replace"><![CDATA[if (utf8_substr($result['Tables_in_' . DB_DATABASE], 0, strlen($dbprefix)) == $dbprefix) { #miwoshop-start]]></add>
+        </operation>
+		
+        <operation error="skip">
+            <search><![CDATA[if (DB_PREFIX) {]]></search>
+            <add position="replace"><![CDATA[if ($dbprefix) { #miwoshop-start]]></add>
+        </operation>
+		
+        <operation error="skip">
+            <search><![CDATA[if (strpos($table, DB_PREFIX) === false) {]]></search>
+            <add position="replace"><![CDATA[if (strpos($table, $dbprefix) === false) { #miwoshop-start]]></add>
+        </operation>
+    </file>
+	
+	<file path="admin/language/english/common/menu.php">
+        <operation error="log">
+            <search><![CDATA[$_['text_zone']]]></search>
+            <add position="before"><![CDATA[#miwoshop-start
+$_['text_themeeditor']               = 'Theme Editor';
+$_['text_upgrade']               	 = 'Upgrade';
+$_['text_support']               	 = 'Support';
+#miwoshop-finish]]></add>
+        </operation>
+    </file>
+	
+    <file path="admin/controller/common/menu.php">
+		<operation error="log">
+			<search><![CDATA[$data['text_zone'] = $this->language->get('text_zone');]]></search>
+			<add position="before"><![CDATA[		#miwoshop-start
+		$data['text_themeeditor'] = $this->language->get('text_themeeditor');
+		$data['text_upgrade'] = $this->language->get('text_upgrade');
+		$data['text_support'] = $this->language->get('text_support');
+		#miwoshop-finish]]></add>
+		</operation>
+		
+		<operation error="log">
+			<search><![CDATA[$data['zone'] = $this->url->link('localisation/zone', 'token=' . $this->session->data['token'], 'SSL');]]></search>
+			<add position="after"><![CDATA[		#miwoshop-start // Theme Editor
+		$data['themeeditor'] = $this->url->link('tool/themeeditor', 'token=' . $this->session->data['token'], 'SSL'); 
+		$data['upgrade'] = $this->url->link('common/upgrade', 'token=' . $this->session->data['token'], 'SSL'); 
+		$data['support'] = $this->url->link('common/support', 'token=' . $this->session->data['token'], 'SSL');
+		#miwoshop-finish]]></add>
+		</operation>
+		
+		<operation error="log">
+			<search><![CDATA[return $this->load->view('common/menu.tpl', $data);]]></search>
+			<add position="before"><![CDATA[		#miwoshop-start
+		#Permissions
+		#Common
+		$data['preturn_upgrade'] = $this->user->hasPermission('access','common/upgrade');
+		$data['preturn_support'] = $this->user->hasPermission('access','common/support');
+		
+		#Catalogs
+		$data['preturn_category'] = $this->user->hasPermission('access','catalog/category');
+		$data['preturn_product'] = $this->user->hasPermission('access','catalog/product');
+		$data['preturn_recurring'] = $this->user->hasPermission('access','catalog/recurring');
+		$data['preturn_filter']	= $this->user->hasPermission('access','catalog/filter');
+		$data['preturn_attribute'] = $this->user->hasPermission('access','catalog/attribute');
+		$data['preturn_attribute_group'] = $this->user->hasPermission('access','catalog/attribute_group');
+		$data['preturn_option']	= $this->user->hasPermission('access','catalog/option');
+		$data['preturn_manufacturer'] = $this->user->hasPermission('access','catalog/manufacturer');
+		$data['preturn_download'] = $this->user->hasPermission('access','catalog/download');
+		$data['preturn_review']	= $this->user->hasPermission('access','catalog/review');
+		$data['preturn_information'] = $this->user->hasPermission('access','catalog/information');
+		
+		#Extensions
+		$data['preturn_installer'] = $this->user->hasPermission('access','extension/installer');
+		$data['preturn_modification'] = $this->user->hasPermission('access','extension/modification');
+		$data['preturn_module'] = $this->user->hasPermission('access','extension/module');
+		$data['preturn_shipping'] = $this->user->hasPermission('access','extension/shipping');
+		$data['preturn_payment'] = $this->user->hasPermission('access','extension/payment');
+		$data['preturn_total'] = $this->user->hasPermission('access','extension/total');
+		$data['preturn_feed'] = $this->user->hasPermission('access','extension/feed');
+
+		#Sales
+		$data['preturn_order'] = $this->user->hasPermission('access','sale/order');
+		$data['preturn_order_recurring'] = $this->user->hasPermission('access','sale/recurring');
+		$data['preturn_return'] = $this->user->hasPermission('access','sale/return');
+		$data['preturn_customer'] = $this->user->hasPermission('access','sale/customer');
+		$data['preturn_customer_group'] = $this->user->hasPermission('access','sale/customer_group');
+		$data['preturn_customer_ban_ip'] = $this->user->hasPermission('access','sale/customer_ban_ip');
+		$data['preturn_custom_field'] = $this->user->hasPermission('access','sale/custom_field');
+		$data['preturn_voucher'] = $this->user->hasPermission('access','sale/voucher');
+		$data['preturn_voucher_theme'] = $this->user->hasPermission('access','sale/voucher_theme');
+		$data['preturn_paypal'] = $this->user->hasPermission('access','payment/pp_express');
+
+		#Marketting
+		$data['preturn_affiliate'] = $this->user->hasPermission('access','marketing/affiliate');
+		$data['preturn_contact'] = $this->user->hasPermission('access','marketing/contact');
+		$data['preturn_coupon'] = $this->user->hasPermission('access','marketing/coupon');
+		$data['preturn_marketing'] = $this->user->hasPermission('access','marketing/marketing');
+
+		#System
+		$data['preturn_setting'] = $this->user->hasPermission('access','setting/store');
+		$data['preturn_design_layout'] = $this->user->hasPermission('access','design/layout');
+		$data['preturn_design_banner'] = $this->user->hasPermission('access','design/banner');
+		$data['preturn_user'] = $this->user->hasPermission('access','user/user');
+		$data['preturn_user_permission'] = $this->user->hasPermission('access','user/user_permission');
+		$data['preturn_user_api'] = $this->user->hasPermission('access','user/api');
+		$data['preturn_localisation'] = $this->user->hasPermission('access','localisation/localisation');
+		$data['preturn_currency'] = $this->user->hasPermission('access','localisation/currency');
+		$data['preturn_stock_status'] = $this->user->hasPermission('access','localisation/stock_status');
+		$data['preturn_order_status'] = $this->user->hasPermission('access','localisation/order_status');
+		$data['preturn_return_status'] = $this->user->hasPermission('access','localisation/return_status');
+		$data['preturn_return_action'] = $this->user->hasPermission('access','localisation/return_action');
+		$data['preturn_return_reason'] = $this->user->hasPermission('access','localisation/return_reason');
+		$data['preturn_country'] = $this->user->hasPermission('access','localisation/country');
+		$data['preturn_zone'] = $this->user->hasPermission('access','localisation/zone');
+		$data['preturn_geo_zone'] = $this->user->hasPermission('access','localisation/geo_zone');
+		$data['preturn_tax_class'] = $this->user->hasPermission('access','localisation/tax_class');
+		$data['preturn_tax_rate'] = $this->user->hasPermission('access','localisation/tax_rate');
+		$data['preturn_length_class'] = $this->user->hasPermission('access','localisation/length_class');
+		$data['preturn_weight_class'] = $this->user->hasPermission('access','localisation/weight_class');
+
+		#Tools
+		$data['preturn_woocommerce'] = $this->user->hasPermission('access','tool/woocommerce');
+		$data['preturn_backup'] = $this->user->hasPermission('access','tool/backup');
+		$data['preturn_error_log'] = $this->user->hasPermission('access','tool/error_log');
+		$data['preturn_themeeditor'] = $this->user->hasPermission('access','tool/themeeditor');
+		$data['preturn_upload'] = $this->user->hasPermission('access','tool/upload');
+		$data['preturn_wpecommerce'] = $this->user->hasPermission('access','tool/wpecommerce');
+		$data['preturn_ready_ecommerce'] = $this->user->hasPermission('access','tool/ready_ecommerce');
+		$data['preturn_ecommerceprodcat'] = $this->user->hasPermission('access','tool/ecommerceprodcat');
+		$data['preturn_jigoshop'] = $this->user->hasPermission('access','tool/jigoshop');
+		$data['preturn_joomshopping'] = $this->user->hasPermission('access','tool/joomshopping');
+		$data['preturn_marketpress'] = $this->user->hasPermission('access','tool/marketpress');
+		$data['preturn_thecartpress'] = $this->user->hasPermission('access','tool/thecartpress');
+		$data['preturn_woocart'] = $this->user->hasPermission('access','tool/woocart');
+		
+		#Reports
+		$data['preturn_sale_order'] = $this->user->hasPermission('access','report/sale_order');
+		$data['preturn_sale_tax'] = $this->user->hasPermission('access','report/sale_tax');
+		$data['preturn_sale_shipping'] = $this->user->hasPermission('access','report/sale_shipping');
+		$data['preturn_sale_return'] = $this->user->hasPermission('access','report/sale_return');
+		$data['preturn_sale_coupon'] = $this->user->hasPermission('access','report/sale_coupon');
+		$data['preturn_product_viewed'] = $this->user->hasPermission('access','report/product_viewed');
+		$data['preturn_product_purchased'] = $this->user->hasPermission('access','report/product_purchased');
+		$data['preturn_customer_online'] = $this->user->hasPermission('access','report/customer_online');
+		$data['preturn_customer_activity'] = $this->user->hasPermission('access','report/customer_activity');
+		$data['preturn_customer_order'] = $this->user->hasPermission('access','report/customer_order');
+		$data['preturn_customer_reward'] = $this->user->hasPermission('access','report/customer_reward');
+		$data['preturn_customer_credit'] = $this->user->hasPermission('access','report/customer_credit');
+		$data['preturn_marketing'] = $this->user->hasPermission('access','report/marketing');
+		$data['preturn_affiliate'] = $this->user->hasPermission('access','report/affiliate');
+		$data['preturn_affiliate_activity'] = $this->user->hasPermission('access','report/affiliate_activity');
+		#miwoshop-finish]]></add>
+		</operation>
+   	</file>
+	
+</modification>
